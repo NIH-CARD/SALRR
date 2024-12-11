@@ -1,4 +1,4 @@
-# ** Processing ONT longread RNA data**
+# **Processing ONT longread RNA datasets**
 
 ![Sample Image](Workflow.png)
 
