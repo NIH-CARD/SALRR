@@ -4,12 +4,12 @@ Summarizing the the foundational data processing, and analysis steps we do in th
 
 CARD ❤️ Open Science 😍
 
-**Written By:** 
+**Written By:** C
 
 **Last Updated**: December 2024 
 
 **Quick Description**: 
-
+T
 **Link to Manuscript:** 
 
 ### **Summary:**
@@ -18,8 +18,9 @@ CARD ❤️ Open Science 😍
 ### **Repository Orientation:**
 
 
-**1.* 
-- 1.1 
+**1.* Data Processing
+- 1.1 Data organization per cohort
+We initially transfer raw ONT data to cohort folder (e.g., /data/CARDPB/data/NABEC/) and then organize this data in 
 - 1.2 
 
 
