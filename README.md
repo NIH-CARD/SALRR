@@ -1,5 +1,5 @@
 # **Processing ONT longread RNA datasets**
-
+Summarizing the the foundational data processing, and analysis steps we do in the NIA CARD LRS group.
 ![Sample Image](Workflow.png)
 
 CARD ❤️ Open Science 😍
