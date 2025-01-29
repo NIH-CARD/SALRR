@@ -1,19 +1,33 @@
 # **Processing ONT longread RNA datasets**
-Summarizing the the foundational data processing, and analysis steps we do in the NIA CARD LRS group.
+A pipeline for data processing and analysis RNA-Seq data using ONT and Long_read RNA in steps we follow in the NIA CARD LRS group.
 ![Sample Image](Workflow.png)
 
 CARD ❤️ Open Science 😍
 
-**Written By:** C
+**Written By:**
 
 **Last Updated**: December 2024 
 
 **Quick Description**: 
-T
+
 **Link to Manuscript:** 
 
-### **Summary:**
+### **Pipeline Description:**
 
+The pipeline is built around the following tools:
+
+- **Long_read_report_parser**
+- **Dorodo_Basecalling**
+- **Pychoper**
+- **Minimap2**
+- **SIRVsuite**
+- **Stringtie and IsoQuant**
+- **rnaseqtools_gtfmerge**
+    
+    
+
+### **Summary:**
+The CARD Long Read RNA processing pipeline is a collection of
 
 ### **Repository Orientation:**
 
