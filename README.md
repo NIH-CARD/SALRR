@@ -14,11 +14,12 @@ CARD ❤️ Open Science 😍
 
 ### **Pipeline Description:**
 
-The pipeline is built around the following tools:
+The pipeline is built around the following tools and repositories:
 
+- **[LRS bioinformatics tutorial](https://github.com/molleraj/lrs-bioinformatics-tutorial)**
 - **[Long_read_report_parser](https://github.com/molleraj/CARDlongread-report-parser)**
 - **[Dorado_Basecalling](https://github.com/nanoporetech/dorado)**
-- **[Pychoper](https://github.com/nanoporetech/pychopper)**
+- **[Pychopper](https://github.com/nanoporetech/pychopper)**
 - **[Minimap2](https://github.com/lh3/minimap2)**
 - **[SIRVsuite](https://github.com/Lexogen-Tools/SIRVsuite)**
 - **[Stringtie](https://github.com/gpertea/stringtie) and [IsoQuant](https://ablab.github.io/IsoQuant/index.html)**
