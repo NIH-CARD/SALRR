@@ -16,13 +16,13 @@ CARD ❤️ Open Science 😍
 
 The pipeline is built around the following tools:
 
-- **Long_read_report_parser**
-- **Dorodo_Basecalling**
-- **Pychoper**
-- **Minimap2**
-- **SIRVsuite**
-- **Stringtie and IsoQuant**
-- **rnaseqtools_gtfmerge**
+- **[Long_read_report_parser](https://github.com/molleraj/longread-report-parser?tab=readme-ov-file)**
+- **[Dorodo_Basecalling](https://github.com/nanoporetech/dorado)**
+- **[Pychoper](https://github.com/nanoporetech/pychopper)**
+- **[Minimap2](https://github.com/lh3/minimap2)**
+- **[SIRVsuite](https://github.com/Lexogen-Tools/SIRVsuite/tree/master)**
+- **[Stringtie](https://github.com/gpertea/stringtie) and [IsoQuant](https://ablab.github.io/IsoQuant/index.html)**
+- **[rnaseqtools_gtfmerge](https://github.com/Kingsford-Group/rnaseqtools)**
     
     
 
