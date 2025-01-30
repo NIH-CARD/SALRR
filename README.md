@@ -17,7 +17,7 @@ CARD ❤️ Open Science 😍
 The pipeline is built around the following tools and repositories:
 
 - **[LRS bioinformatics tutorial](https://github.com/molleraj/lrs-bioinformatics-tutorial)**
-- **[Long_read_report_parser](https://github.com/molleraj/CARDlongread-report-parser)**
+- **[CARD_Long_read_report_parser](https://github.com/molleraj/CARDlongread-report-parser)**
 - **[Dorado_Basecalling](https://github.com/nanoporetech/dorado)**
 - **[Pychopper](https://github.com/nanoporetech/pychopper)**
 - **[Minimap2](https://github.com/lh3/minimap2)**
