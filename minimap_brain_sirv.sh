@@ -16,6 +16,7 @@ SAMPLE_ID=$(sed -n ${N}p $SAMPLE_SHEET | cut -f 1)
 # second column is flow cell (e.g., PAY78456)
 FLOWCELL=$(sed -n ${N}p $SAMPLE_SHEET | cut -f 2)
 
+basecalling_model="cdna_r10.4.1_e8.2_400bps_sup@v5.0.0"
 # debugging output to slurm script
 echo "Job Array #${N}"
 echo "SAMPLE_ID ${SAMPLE_ID}"
@@ -34,61 +35,70 @@ REF_DIR="/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set
 mkdir -p ${BASE_DIR}/MAPPED/${SAMPLE_ID}/
 
 # load modules
-#
+
 module load samtools/1.21
 module load minimap2/2.28
 
+# Output Bam files
+SIRV_UNFILTERED_BAM="${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_SIRVome_mapped_unfiltered.sorted.bam"
+SIRV_FILTERED_BAM="${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_SIRV_mapped_filtered.sorted.bam"
+UNMAPPED_BAM="${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.sorted.bam"
+UNMAPPED_FASTQ="${PYCHOPPER_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.fastq"
+BRAIN_MAPPED_BAM="${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam"
+
+
 # Mapping
 # debugging output with output path for unmapped BAM
-echo "${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRVome_mapped_unfiltered.sorted.bam"
-echo "${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRV_mapped_filtered.sorted.bam"
-echo "${BASE_DIR}/ONT_UBAM/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.sorted.bam"
-echo "${BASE_DIR}/PYCHOPPER/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.fastq"
-echo "${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam"
+echo "${SIRV_UNFILTERED_BAM}"
+echo "${SIRV_FILTERED_BAM}"
+echo "${UNMAPPED_BAM}"
+echo "${UNMAPPED_FASTQ}"
+echo "${BRAIN_MAPPED_BAM}"
 minimap2 \
 -t $SLURM_CPUS_PER_TASK \
 -ax splice \
---splice-flank=no /data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta
-_20210507.fasta ${BASE_DIR}/PYCHOPPER/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_cdna_r10.4.1_e8.2_400bps_sup@v5.0.0.t
-rimmed.fastq - \
+--splice-flank=no \
+"${SIRV_REF_DIR}/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta" \
+${PYCHOPPER_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.trimmed.fastq - \
 | samtools view -b - \
-| samtools sort -@ $SLURM_CPUS_PER_TASK - \
-> ${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRVome_mapped_unfiltered.sorted.bam
-samtools index ${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRVome_mapped_unfiltered.sorted.bam && \
+| samtools sort \
+-@ $SLURM_CPUS_PER_TASK - \
+> "${SIRV_UNFILTERED_BAM}"
+samtools index "${SIRV_UNFILTERED_BAM}" && \
 samtools view \
 -q 40 \
 -F 2304 \
 -b \
-${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRVome_mapped_unfiltered.sorted.bam | samtools sort \
+"${SIRV_UNFILTERED_BAM}" | samtools sort \
 -@ $SLURM_CPUS_PER_TASK - \
-> ${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRV_mapped_filtered.sorted.bam
-samtools index ${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRV_mapped_filtered.sorted.bam && \
+> "${SIRV_FILTERED_BAM}"
+samtools index "${SIRV_FILTERED_BAM}" && \
 samtools view \
 -f 4 \
 -b \
-${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_SIRVome_mapped_unfiltered.sorted.bam | samtools sort \
+"${SIRV_UNFILTERED_BAM}" | samtools sort \
 -@ $SLURM_CPUS_PER_TASK - \
-> ${BASE_DIR}/ONT_UBAM/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.sorted.bam
-samtools index ${BASE_DIR}/ONT_UBAM/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.sorted.bam && \
+> "${UNMAPPED_BAM}"
+samtools index "${UNMAPPED_BAM}" && \
 samtools fastq \
 -T* \
 -@ $SLURM_CPUS_PER_TASK \
 -n \
-${BASE_DIR}/ONT_UBAM/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.sorted.bam \
-> ${BASE_DIR}/PYCHOPPER/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_unmapped.fastq && \
+"${UNMAPPED_BAM}" \
+> "${UNMAPPED_FASTQ}" && \
 minimap2 \
 -t $SLURM_CPUS_PER_TASK \
 -ax splice \
 -k 14 \
 -uf \
-/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa ${BASE_DIR}/PYCHOPPER/${SAMPLE_ID}/${S
-AMPLE_ID}_${FLOWCELL}_brain_unmapped.fastq - \
+{$REF_DIR} \
+"${UNMAPPED_FASTQ}" - \
 | samtools view \
 -q 40 \
 -F 2304 \
 -b - \
 | samtools sort \
 -@ $SLURM_CPUS_PER_TASK - \
-> ${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam
+> "${BRAIN_MAPPED_BAM}"
 samtools index \
-${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam
+"${BRAIN_MAPPED_BAM}"
