@@ -60,19 +60,19 @@ echo "Trimmed FASTQ: $TRIMMED_FASTQ"
 # Converting BAM to FASTQ using samtools
 
 samtools fastq \
--T* \
--@ $SLURM_CPUS_PER_TASK \
--n \
-"${INPUT_BAM}" \
-> "${OUTPUT_FASTQ}" && \
+  -T* \
+  -@ $SLURM_CPUS_PER_TASK \
+  -n \
+  "${INPUT_BAM}" \
+  > "${OUTPUT_FASTQ}" && \
 pychopper \
--t $SLURM_CPUS_PER_TASK \
--m phmm \
--k PCS114 \
--r "${PYCHOPPER_PDF}" \
--S "${PYCHOPPER_TSV}" \
-"${OUTPUT_FASTQ}" \
-"${TRIMMED_FASTQ}" 
+  -t $SLURM_CPUS_PER_TASK \
+  -m phmm \
+  -k PCS114 \
+  -r "${PYCHOPPER_PDF}" \
+  -S "${PYCHOPPER_TSV}" \
+  "${OUTPUT_FASTQ}" \
+  "${TRIMMED_FASTQ}" 
 
 
 #How to run the script
