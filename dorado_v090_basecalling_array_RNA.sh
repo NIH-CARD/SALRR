@@ -23,7 +23,7 @@ echo "SAMPLE_ID ${SAMPLE_ID}"
 echo "FLOWCELL ${FLOWCELL}"
 
 #flow cell specific basecalling model
-basecalling_model="cdna_r10.4.1_e8.2_400bps_sup@v5.0.0"
+basecalling_model="dna_r10.4.1_e8.2_400bps_sup@v5.0.0"
 
 # base directory paths
 
@@ -40,23 +40,24 @@ module load pod5
 
 
 # debugging output with output path for unmapped BAM
-echo "${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.bam"
+echo "${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_c${basecalling_model}.bam"
 
 # Basecalling with dorado
 dorado basecaller \
     --no-trim \
     --estimate-poly-a \
     -x cuda:all \
-    ${DORADO_MODELS}/${basecalling_model} ${BASE_DIR}/${SAMPLE_ID}/${SAMPLE_ID}/${FLOWCELL}/pod5 \
+    ${DORADO_MODELS}/${basecalling_model} \
+    ${BASE_DIR}/${SAMPLE_ID}/${SAMPLE_ID}/${FLOWCELL}/pod5 \
     --skip-model-compatibility-check \
-    > ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.bam
+    > ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_c${basecalling_model}.bam
 
 # debugging output with output path for sequencing summary QC text file
 echo "${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_sequencing_summary_v5.0.0.txt"
 
 # Generating sequencing summary reports
 dorado summary \
-    ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.bam \
+    ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_c${basecalling_model}.bam \
     > ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_sequencing_summary_v5.0.0.txt
 
 # How to run the script
