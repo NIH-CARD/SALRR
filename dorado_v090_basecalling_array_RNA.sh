@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=30
 #SBATCH --mem=120g
 #SBATCH --mail-type=BEGIN,TIME_LIMIT_90,END
-#SBATCH --time=48:00:00
+#SBATCH --time=72:00:00
 #SBATCH --gres=lscratch:50,gpu:a100:2
 
 # get array job number for spooling subjobs
@@ -40,7 +40,7 @@ module load pod5
 
 
 # debugging output with output path for unmapped BAM
-echo "${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_c${basecalling_model}.bam"
+echo "${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.bam"
 
 # Basecalling with dorado
 dorado basecaller \
@@ -49,7 +49,7 @@ dorado basecaller \
     -x cuda:all \
     ${DORADO_MODELS}/${basecalling_model} ${BASE_DIR}/${SAMPLE_ID}/${SAMPLE_ID}/${FLOWCELL}/pod5 \
     --skip-model-compatibility-check \
-    > ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_c${basecalling_model}.bam
+    > ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.bam
 
 # debugging output with output path for sequencing summary QC text file
 echo "${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_sequencing_summary_v5.0.0.txt"
@@ -59,5 +59,5 @@ dorado summary \
     ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_${basecalling_model}.bam \
     > ${ONT_UBAM_DIR}/${SAMPLE_ID}_${FLOWCELL}_sequencing_summary_v5.0.0.txt
 
-#How to run the script
-#s b a t c h --array=1-10 script_name.sh (this is an example if you have 10 samples)
+# How to run the script
+# sbatch --array=1-10 script_name.sh (this is an example if you have 10 samples)
