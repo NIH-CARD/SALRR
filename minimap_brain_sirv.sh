@@ -34,6 +34,7 @@ BRAIN_UBAM_DIR="${BASE_DIR}/BRAIN_UBAM/${SAMPLE_ID}" # NGD directory for unmappe
 ONT_UBAM_DIR="${BASE_DIR}/ONT_UBAM/${FLOWCELL}" # NGD directory for unmapped reads
 SIRV_REF_DIR="/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV"
 REF_DIR="/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa"
+
 # make output directories and parent if necessary
 
 mkdir -p "${MAPPED_DIR}" "${BRAIN_UBAM_DIR}"
