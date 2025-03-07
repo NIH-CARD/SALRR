@@ -24,19 +24,15 @@ echo "FLOWCELL ${FLOWCELL}"
 
 # base directory paths
 BASE_DIR="/data/CARDPB/data/LRS_RNA/data/NGD"
-STR_BRAIN="/data/CARDPB/data/LRS_RNA/data/NGD"
-STR_BRAIN="${BASE_DIR}/MAPPED/${SAMPLE_ID}"
-PYCHOPPER_DIR="${BASE_DIR}/PYCHOPPER/${SAMPLE_ID}"
-BRAIN_UBAM_DIR="${BASE_DIR}/BRAIN_UBAM/${SAMPLE_ID}" # NGD directory for unmapped brain reads
-ONT_UBAM_DIR="${BASE_DIR}/ONT_UBAM/${FLOWCELL}" # NGD directory for unmapped reads
+STR_ASM="${BASE_DIR}/ASSEMBLY/STRINGTIE/${SAMPLE_ID}"
+ISO_ASM="${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID}"
+MAPPED_DIR="${BASE_DIR}/MAPPED/${SAMPLE_ID}"
 REF_GTF="/data/CARDPB/resources/hg38/gencode.v43.annotation.gtf"
 REF_FASTA="/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa"
 
 # make output directories and parent if necessary
 
-mkdir -p ${BASE_DIR}/ASSEMBLY/STRINGTIE/${SAMPLE_ID}/ #stringtie output directory
-
-mkdir -p ${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID}/ #isoquant output directory
+mkdir -p "${STR_ASM}" "${ISO_ASM}" # Stringtie and IsoQuant output directory
 
 # load modules
 module load stringtie/2.2.3
@@ -46,24 +42,28 @@ module load isoquant/3.6.2
 # debugging output with output path for unmapped BAM
 echo "${BASE_DIR}/ASSEMBLY/STRINGTIE/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_STR_asm.gtf"
 echo "${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_ISO_asm.gtf"
+
+# Stringtie Assembly
 stringtie \
-${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam \
--L \
--p $SLURM_CPUS_PER_TASK \
--G /data/CARDPB/resources/hg38/gencode.v43.annotation.gtf \
--o ${BASE_DIR}/ASSEMBLY/STRINGTIE/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_STR_asm.gtf \
-&& \
+    ${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam \
+    -L \
+    -p $SLURM_CPUS_PER_TASK \
+    -G ${REF_GTF} \
+    -o ${STR_ASM}/${SAMPLE_ID}_${FLOWCELL}_brain_STR_asm.gtf || exit 1
+
+# Isoquant Assembly
+
 isoquant.py \
--t 60 \
---reference ${REF_FASTA} \
---genedb /data/CARDPB/resources/hg38/gencode.v43.annotation.gtf \
---complete_genedb \
---bam ${BASE_DIR}/MAPPED/${SAMPLE_ID}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam \
---data_type nanopore \
---check_canonical \
---sqanti_output \
---prefix ${SAMPLE_ID} \
--o ${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID}/
+    -t 60 \
+    --reference ${REF_FASTA} \
+    --genedb ${REF_GTF} \
+    --complete_genedb \
+    --bam ${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam \
+    --data_type nanopore \
+    --check_canonical \
+    --sqanti_output \
+    --prefix ${SAMPLE_ID} \
+    -o ${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID} || exit 1
 # How to run the script
 # s b a t c h --array=1-10 script_name.sh (this is an example if you have 10 samples)
 
