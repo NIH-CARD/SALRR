@@ -64,7 +64,10 @@ samtools fastq \
   -@ $SLURM_CPUS_PER_TASK \
   -n \
   "${INPUT_BAM}" \
-  > "${OUTPUT_FASTQ}" && \
+  > "${OUTPUT_FASTQ}" || exit 1
+
+# Running pychopper for trimming
+
 pychopper \
   -t $SLURM_CPUS_PER_TASK \
   -m phmm \
@@ -75,5 +78,5 @@ pychopper \
   "${TRIMMED_FASTQ}" 
 
 
-#How to run the script
-#s b a t c h --array=1-10 script_name.sh (this is an example if you have 10 samples)
+# How to run the script
+# sbatch --array=1-10 script_name.sh (this is an example if you have 10 samples)
