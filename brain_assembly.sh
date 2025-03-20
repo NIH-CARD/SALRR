@@ -3,7 +3,7 @@
 #SBATCH --cpus-per-task=60
 #SBATCH --mem=120g
 #SBATCH --mail-type=BEGIN,TIME_LIMIT_90,END
-#SBATCH --time=04:00:00
+#SBATCH --time=72:00:00
 #SBATCH --gres=lscratch:50
 #SBATCH --partition=norm
 
@@ -63,6 +63,7 @@ isoquant.py \
     --check_canonical \
     --sqanti_output \
     --prefix ${SAMPLE_ID} \
+    --count_exons \
     -o ${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID} || exit 1
 # How to run the script
 # s b a t c h --array=1-10 script_name.sh (this is an example if you have 10 samples)

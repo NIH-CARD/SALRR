@@ -64,6 +64,7 @@ isoquant.py \
     --check_canonical \
     --sqanti_output \
     --prefix ${SAMPLE_ID} \
+    --count_exons \
     -o ${ISO_ASM} || exit 1
 
 # Run SIRV Stringtie quantification
