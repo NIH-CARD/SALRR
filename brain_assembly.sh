@@ -64,7 +64,7 @@ isoquant.py \
     --sqanti_output \
     --prefix ${SAMPLE_ID} \
     --count_exons \
-    -o ${BASE_DIR}/ASSEMBLY/ISOQUANT/${SAMPLE_ID} || exit 1
+    -o ${ISO_ASM} || exit 1
 # How to run the script
 # s b a t c h --array=1-10 script_name.sh (this is an example if you have 10 samples)
 
