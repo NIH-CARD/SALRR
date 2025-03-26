@@ -30,4 +30,4 @@ GTF_FILE="${BASE_DIR}/ASSEMBLY/STRINGTIE/${SAMPLE_ID}/SIRV/${SAMPLE_ID}_${FLOWCE
 echo "Processing GTF file at: $GTF_FILE"
 
 # Run the Python script
-python process_gtf.py "$GTF_FILE" "$SAMPLE_ID" "$FLOWCELL"
+python sirvsuite_gtf_parsing_main.py "$GTF_FILE" "$SAMPLE_ID" "$FLOWCELL"
