@@ -67,14 +67,14 @@ isoquant.py \
     --count_exons \
     -o ${ISO_ASM} || exit 1
 
-# Run SIRV Stringtie quantification
+# Run SIRV Stringtie quantification of reference transcripts only 
 
 stringtie \
     ${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_SIRV_mapped_filtered.sorted.bam \
     -e \
     -L \
     -p $SLURM_CPUS_PER_TASK \
-    -G ${STR_ASM}/${SAMPLE_ID}_${FLOWCELL}_sirv_STR_asm.gtf \
+    -G ${REF_GTF} \
     -o ${STR_ASM}/${SAMPLE_ID}_${FLOWCELL}_sirv_quantified_STR_asm.gtf
 
 
