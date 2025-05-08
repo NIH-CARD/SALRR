@@ -23,7 +23,7 @@ The pipeline is built around the following tools and repositories:
 - **[Minimap2](https://github.com/lh3/minimap2)**
 - **[SIRVsuite](https://github.com/Lexogen-Tools/SIRVsuite)**
 - **[Stringtie](https://github.com/gpertea/stringtie) and [IsoQuant](https://ablab.github.io/IsoQuant/index.html)**
-- **[rnaseqtools_gtfmerge](https://github.com/Kingsford-Group/rnaseqtools)**
+- **[TAMA](https://github.com/GenomeRIK/tama)**
     
     
 
