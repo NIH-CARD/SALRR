@@ -34,7 +34,7 @@ Additional tools:
 
 **Pipeline Steps**
 1. **Base Calling** 
-We perform base calling on ONT `.pod5` files using Dorado v9 to generate `.bam` files.
-Example Command:
+We perform base calling on ONT `.pod5` files using Dorado v9 to generate `.bam` files.  
+Example Command:  
 `sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh`
 
