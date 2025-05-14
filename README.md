@@ -15,7 +15,7 @@ Ensure the following dependencies and tools are installed before running the pip
    - Minimap2 (Mapping)  
    - IsoQuant(transcript assembly)  
    - StringTie (transcript assembly)  
-   - TAMA (assembly merging)  
+   - TAMA , GFFCOMPARE, ISOQUANT (assembly merging, reannotation, and requantification)  
 
 Addition dependencies and tools:  
    - CARD_Long_read_report_parser(sequencing report parsing and visualization)   
@@ -27,7 +27,7 @@ Instructions for installing each tool are provided in their respective documenta
 - **[Pychopper](https://github.com/nanoporetech/pychopper)**
 - **[Minimap2](https://github.com/lh3/minimap2)**
 - **[Stringtie](https://github.com/gpertea/stringtie) and [IsoQuant](https://ablab.github.io/IsoQuant/index.html)**
-- **[TAMA](https://github.com/GenomeRIK/tama.git)**
+- **[TAMA](https://github.com/GenomeRIK/tama.git) and [GFFCOMPARE](https://github.com/gpertea/gffcompare.git)**
 
 Additional tools:
 - **[CARD_Long_read_report_parser](https://github.com/molleraj/CARDlongread-report-parser)** 
@@ -53,8 +53,10 @@ Perform transcripts assembly using IsoQuant and StringTie on brain mapped reads 
 - SIRV example command:  
 `sbatch --array=1-4 sirv_assembly.sh`  
 5. **Merging**  
-Merging transcript assemblies from IsoQuant and StringTie using TAMA to generate a unified `.GTF` file  
+Merging transcript assemblies from IsoQuant and StringTie using TAMA to generate a unified `.GTF` file, reannotation the `.GTF` with gffcompare and requantifying using IsoQuant
 Example command:  
 `sbatch --array=1-4 tama_merge_sh`  
-
+  
+**Output**  
+The main final outputs of the pipeline are the merged `.GTF` file of the sample including the `.tsv` files with transcripts and gene quantifications.
 
