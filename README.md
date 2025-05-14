@@ -9,18 +9,18 @@ Currently, the pipeline is implemented as a series of individual scripts, each h
 
 **Requirements**
 
-Ensure the following dependencies and tools are installed before running the pipeline:
-              - Dorado (base calling)
-              - Pychopper (read trimming, rescue and orientation)
-              - Minimap2 (Mapping)
-              - IsoQuant(transcript assembly)
-              - StringTie (transcript assembly)
-              - TAMA (assembly merging)
-Addition dependencies and tools:
-              - CARD_Long_read_report_parser(sequencing report parsing and visualization)
-              - SIRVsuite(SIRV RNA Spike-in Control QC)
+Ensure the following dependencies and tools are installed before running the pipeline:  
+              - Dorado (base calling)  
+              - Pychopper (read trimming, rescue and orientation)  
+              - Minimap2 (Mapping)  
+              - IsoQuant(transcript assembly)  
+              - StringTie (transcript assembly)  
+              - TAMA (assembly merging)    
+Addition dependencies and tools:  
+              - CARD_Long_read_report_parser(sequencing report parsing and visualization)  
+              - SIRVsuite(SIRV RNA Spike-in Control QC)  
 
-Instructions for installing each tool are provided in their respective documentation:
+Instructions for installing each tool are provided in their respective documentation:  
 
 - **[Dorado_Basecalling](https://github.com/nanoporetech/dorado)**
 - **[Pychopper](https://github.com/nanoporetech/pychopper)**
