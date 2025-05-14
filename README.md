@@ -16,6 +16,7 @@ Ensure the following dependencies and tools are installed before running the pip
    - IsoQuant(transcript assembly)  
    - StringTie (transcript assembly)  
    - TAMA (assembly merging)  
+
 Addition dependencies and tools:  
    - CARD_Long_read_report_parser(sequencing report parsing and visualization)   
    - SIRVsuite(SIRV RNA Spike-in Control QC)  
