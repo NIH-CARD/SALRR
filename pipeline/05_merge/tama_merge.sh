@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH --cpus-per-task=60
-#SBATCH --mem=200g
+#SBATCH --mem=300g
 #SBATCH --mail-type=BEGIN,TIME_LIMIT_90,END
-#SBATCH --time=04:00:00
+#SBATCH --time=72:00:00
 #SBATCH --gres=lscratch:50
-#SBATCH --partition=quick
+#SBATCH --partition=norm
 #SBATCH --job-name=tama_merge
 
 # get array job number for spooling subjobs
@@ -73,16 +73,16 @@ fivethresh=300
 splicethresh=10
 threethresh=300
 
-# ${TAMA_BASE_DIR}/tama_merge.py \
-#merge the two bed12 files
-#python -m \
-#tama.tama_merge \
-    #-f ${file_list} \
-    #-p ${prefix} \
-    #-a ${fivethresh} \
-    #-m ${splicethresh} \
-    #-z ${threethresh} \
-    #-d merge_dup
+${TAMA_BASE_DIR}/tama_merge.py \
+# merge the two bed12 files
+python -m \
+tama.tama_merge \
+    -f ${file_list} \
+    -p ${prefix} \
+    -a ${fivethresh} \
+    -m ${splicethresh} \
+    -z ${threethresh} \
+    -d merge_dup
 
 # move the output files of the tama merge tool into to the merged file list directory
 mv ./${prefix}* ${MERGED_PAIRWISE_DIR}/ || exit 1
