@@ -106,3 +106,25 @@ isoquant.py \
     --genedb ${MERGED_PAIRWISE_DIR}/${prefix}.gtf \
     -o ${ISOQUANT_OUT} || exit 1
 
+#making the directory for stringtie output
+mkdir -p ${MERGED_PAIRWISE_DIR}/gffcompare/
+
+#making the annotated gtf and comparison with the ref transcriptome using gffcompare
+gffcompare \
+    -r /data/CARDPB/resources/hg38/gencode.v43.annotation.gtf \
+    -o ${MERGED_PAIRWISE_DIR}/gffcompare/${SAMPLE_ID} \
+    ${MERGED_PAIRWISE_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_asm_merged.gtf
+
+#Quantifying the annoted gtf from gffcompare with IsoQuant
+isoquant.py \
+    -t 60 \
+    --reference ${REF_FASTA} \
+    --transcript_quantification all \
+    --gene_quantification all \
+    --no_model_construction \
+    --data_type assembly \
+    --count_exons   \
+    --bam ${MAPPED_DIR}/${SAMPLE_ID}_${FLOWCELL}_brain_mapped.sorted.bam \
+    --genedb ${MERGED_PAIRWISE_DIR}/gffcompare/${SAMPLE_ID}.annotated.gtf \
+    --prefix ${SAMPLE_ID} \
+    -o ${ISOQUANT_OUT} || exit 1
