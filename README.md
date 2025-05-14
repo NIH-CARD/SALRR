@@ -1,5 +1,5 @@
 # **NIA CARD Long Read RNA Sequencing Pipeline
-![Workflow](CARDlongread_ONT_long_read_RNA/data_processing_workflow.png)
+![Workflow](data_processing_workflow.png)
 
 **Overview**
 
