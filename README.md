@@ -37,5 +37,24 @@ Additional tools:
 1. **Base Calling**   
 We perform base calling on ONT `.pod5` files using Dorado v9 to generate `.bam` files.  
 Example Command:  
-`sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh`
+`sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh`  
+2. **Read Trimming**  
+Identify, orient, and trim full-length Nanopore cDNA reads using Pychopper. `.bam` files are converted to `.fastq` at the start of the run. 
+Example Command:  
+`sbatch --array=1-4 pychopper.sh`  
+3. **Mapping**  
+Map SIRV RNA spike-in control reads to the SIRVome and extracting full-length brain sample reads to the reference genome GRCh38 using Minimap2  
+Example Command:  
+`sbatch --array=1-4 minimap_brain_sirv.sh`  
+4. **Assembly**  
+Perform transcripts assembly using IsoQuant and StringTie on brain mapped reads and SIRV RNA spike-in control reads    
+- Brain example command:  
+`sbatch --array=1-4 brain_assembly.sh`  
+- SIRV example command:  
+`sbatch --array=1-4 sirv_assembly.sh`  
+5. **Merging**  
+Merging transcript assemblies from IsoQuant and StringTie using TAMA to generate a unified `.GTF` file  
+Example command:  
+`sbatch --array=1-4 tama_merge_sh`  
+
 
