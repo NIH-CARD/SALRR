@@ -1,5 +1,6 @@
 # **NIA CARD Long Read RNA Sequencing Pipeline
-[CARDlongread_ONT_long_read_RNA/Screenshot 2025-05-14 at 11.57.12 AM.png]
+![Workflow](CARDlongread_ONT_long_read_RNA/data_processing_workflow.png)
+
 **Overview**
 
 This repository provides a modular and comprehensive pipeline designed for processing Oxford Nanopore Technologies (ONT) long-read RNA sequencing data, optimized for human brain samples. It includes essential steps such as base calling, read trimming, rescue and reorientation, mapping, transcript assembly, and the merging of assembled transcripts.
