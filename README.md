@@ -69,7 +69,7 @@ Our raw ONT sequencing data are collected and transfered to their respective coh
         ├── fastq_fail  
         ├── fastq_pass  
         ├── other_reports  
-        └── pod5```     
-  
+        └── pod5 ```    
+        
 This file hierarchy allows us to easily retrieve samples list used to run pipeline scripts and `.json` file paths which we use to get sequencing summary stastics from [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser).  
 
