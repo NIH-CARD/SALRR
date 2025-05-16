@@ -69,7 +69,8 @@ Our raw ONT sequencing data are collected and transfered to their respective coh
         ├── fastq_fail  
         ├── fastq_pass  
         ├── other_reports  
-        └── pod5 ~~~  
+        └── pod5
+~~~  
 
 
 
