@@ -37,25 +37,25 @@ Additional tools:
 1. **Base Calling**   
 We perform base calling on ONT `.pod5` files using Dorado v9 to generate `.bam` files.  
 Example Command:  
-`sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh`  
+`sbatch --array=1-4 pipeline/01_basecalling/dorado_v090_basecalling_array_RNA.sh`  
 2. **Read Trimming**  
 Identify, orient, and trim full-length Nanopore cDNA reads using Pychopper. `.bam` files are converted to `.fastq` at the start of the run. 
 Example Command:  
-`sbatch --array=1-4 pychopper.sh`  
+`sbatch --array=1-4 pipeline/02_trimming/pychopper.sh`  
 3. **Mapping**  
 Map SIRV RNA spike-in control reads to the SIRVome and extracting full-length brain sample reads to the reference genome GRCh38 using Minimap2  
 Example Command:  
-`sbatch --array=1-4 minimap_brain_sirv.sh`  
+`sbatch --array=1-4 pipeline/03_alignment/minimap_brain_sirv.sh`  
 4. **Assembly**  
 Perform transcripts assembly using IsoQuant and StringTie on brain mapped reads and SIRV RNA spike-in control reads    
 - Brain example command:  
-`sbatch --array=1-4 brain_assembly.sh`  
+`sbatch --array=1-4 pipeline/04_assembly/brain_assembly.sh`  
 - SIRV example command:  
-`sbatch --array=1-4 sirv_assembly.sh`  
+`sbatch --array=1-4 pipeline/04_assembly/sirv_assembly.sh`  
 5. **Merging**  
 Merging transcript assemblies from IsoQuant and StringTie using TAMA to generate a unified `.GTF` file, reannotation the `.GTF` with gffcompare and requantifying using IsoQuant
 Example command:  
-`sbatch --array=1-4 tama_merge_sh`  
+`sbatch --array=1-4 pipeline/05_merge/tama_merge.sh`  
   
 **Output**  
 The main final outputs of the pipeline are the merged `.GTF` file of the sample including the `.tsv` files with transcripts and gene quantifications.
@@ -119,19 +119,19 @@ NABEC_SH-97-53_FTX_RNA  20250114_2315_3C_PAY68370_975be5bd
 With our samples list ready we can running the pipeline scripts sequentially for 4 samples.
 ```
 # Base Calling  
-sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh  
+sbatch --array=1-4 pipeline/01_basecalling/dorado_v090_basecalling_array_RNA.sh  
 
 # Trimming  
-sbatch --array=1-4 pychopper.sh  
+sbatch --array=1-4 pipeline/02_trimming/pychopper.sh  
 
 # Mapping    
-sbatch --array=1-4 minimap_brain_sirv.sh  
+sbatch --array=1-4 pipeline/03_alignment/minimap_brain_sirv.sh  
 
 # Assembly   
-sbatch --array=1-4 brain_assembly.sh # mapping read to GRCh38   
-sbatch --array=1-4 sirv_assembly.sh  # mapping reads to SIRV genome  
+sbatch --array=1-4 pipeline/04_assembly/brain_assembly.sh # mapping read to GRCh38   
+sbatch --array=1-4 pipeline/04_assembly/sirv_assembly.sh  # mapping reads to SIRV genome  
 
 # Merging    
-sbatch --array=1-4 tama_merge_sh   
+sbatch --array=1-4 pipeline/05_merge/tama_merge_sh   
 ```  
 
