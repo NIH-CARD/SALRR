@@ -116,7 +116,7 @@ NABEC_SH-05-16_FTX_RNA  20250114_2315_3D_PBA14601_3935a955
 NABEC_SH-97-09_FTX_RNA  20250114_2314_3B_PAW72691_179afafe
 NABEC_SH-97-53_FTX_RNA  20250114_2315_3C_PAY68370_975be5bd  
 ```
-With our samples list ready we can running the pipeline scripts sequentially.
+With our samples list ready we can running the pipeline scripts sequentially for 4 samples.
 ```
 # Base Calling  
 sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh  
