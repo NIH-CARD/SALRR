@@ -117,4 +117,21 @@ NABEC_SH-97-09_FTX_RNA  20250114_2314_3B_PAW72691_179afafe
 NABEC_SH-97-53_FTX_RNA  20250114_2315_3C_PAY68370_975be5bd  
 ```
 With our samples list ready we can running the pipeline scripts sequentially.
+```
+# Base Calling  
+sbatch --array=1-4 dorado_v090_basecalling_array_RNA.sh  
+
+# Trimming  
+sbatch --array=1-4 pychopper.sh  
+
+# Mapping    
+sbatch --array=1-4 minimap_brain_sirv.sh  
+
+# Assembly   
+sbatch --array=1-4 brain_assembly.sh # mapping read to GRCh38   
+sbatch --array=1-4 sirv_assembly.sh  # mapping reads to SIRV genome  
+
+# Merging    
+sbatch --array=1-4 tama_merge_sh   
+```  
 
