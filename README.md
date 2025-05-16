@@ -83,7 +83,7 @@ find /data/CARD_AUX/LRS_temp/NABEC_RNA/ \
 -name "*.json" \  
 > /data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/json_report_paths.txt  
 ```  
-output:  
+output:json_report_paths.txt    
 ```  
 /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/report_PAW72725_20250114_2321_5119b730.json
 /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_KEN-1092_FTX_RNA/NABEC_KEN-1092_FTX_RNA/20250114_2320_2B_PBA15382_a372bdf5/report_PBA15382_20250114_2326_a372bdf5.json
@@ -104,7 +104,7 @@ while read -r jsonfilepaths; do
    >>  /data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/sample_sheet.txt
 done < /data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/json_report_paths.txt  
 ```  
-output:  
+output: sample_sheet.txt   
 ```  
 NABEC_KEN-1069_FTX_RNA  20250114_2319_2A_PAW72725_5119b730
 NABEC_KEN-1092_FTX_RNA  20250114_2320_2B_PBA15382_a372bdf5
