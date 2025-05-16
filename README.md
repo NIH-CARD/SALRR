@@ -62,7 +62,7 @@ The main final outputs of the pipeline are the merged `.GTF` file of the sample 
 # Data Structure and Pipeline Usage 
 Our raw ONT sequencing data are collected and transfered to their respective cohort directories. For example, our NABEC cohort has the following path: `/data/CARD_AUX/LRS_temp/NABEC_RNA` . Within the `NABEC_RNA` directory each sample folder are organized as follow:  
  
-`./NABEC_RNA/NABEC_KEN-1069_FTX_RNA  
+`./NABEC_RNA/NABEC_KEN-1069_FTX_RNA   
 └── NABEC_KEN-1069_FTX_RNA  
     └── 20250114_2319_2A_PAW72725_5119b730  
         ├── fastq_fail  
