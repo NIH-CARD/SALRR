@@ -1,4 +1,4 @@
-# NIA CARD Long Read RNA Sequencing Pipeline
+# NIA CARD Long-read RNA Sequencing Pipeline
 ![Workflow](data_processing_workflow.png)
 
 **Overview**
@@ -15,7 +15,7 @@ Ensure the following dependencies and tools are installed before running the pip
    - Minimap2 (Mapping)  
    - IsoQuant(transcript assembly)  
    - StringTie (transcript assembly)  
-   - TAMA , GFFCOMPARE, ISOQUANT (assembly merging, reannotation, and requantification)  
+   - TAMA , Gffcompre (assembly merging and reannotation)  
 
 Addition dependencies and tools:  
    - CARD_Long_read_report_parser(sequencing report parsing and visualization)   
@@ -43,22 +43,22 @@ Identify, orient, and trim full-length Nanopore cDNA reads using Pychopper. `.ba
 Example Command:  
 `sbatch --array=1-4 pipeline/02_trimming/pychopper.sh`  
 3. **Mapping**  
-Map SIRV RNA spike-in control reads to the SIRVome and extracting full-length brain sample reads to the reference genome GRCh38 using Minimap2  
+Map SIRV RNA spike-in control reads to the SIRV genome (SIRVome) and extracting full-length brain sample reads to map to the reference genome GRCh38 using Minimap2. The input is the `.fastq` file from Pychopper output and the outputs are mapped `.bam` files.   
 Example Command:  
 `sbatch --array=1-4 pipeline/03_alignment/minimap_brain_sirv.sh`  
 4. **Assembly**  
-Perform transcripts assembly using IsoQuant and StringTie on brain mapped reads and SIRV RNA spike-in control reads    
+Perform transcripts assembly using IsoQuant and StringTie on brain mapped reads and SIRV RNA spike-in control reads. Mapped `.bam`, `FASTA`, and Encode.V43 `.gtf` reference transcriptome files are used as input to generate the `.gtf` file of assembled brain isoforms and `.tsv` files of transcripts quantifications. For the SIRV RNA the mapped SIRV `.bam`, SIRVome `FASTA`, and `.gtf` are provided to generate the `.gtf` of assembled SIRV isoforms and `.tsv` files of transcripts quantifications.
 - Brain example command:  
 `sbatch --array=1-4 pipeline/04_assembly/brain_assembly.sh`  
 - SIRV example command:  
 `sbatch --array=1-4 pipeline/04_assembly/sirv_assembly.sh`  
 5. **Merging**  
-Merging transcript assemblies from IsoQuant and StringTie using TAMA to generate a unified `.GTF` file, reannotation the `.GTF` with gffcompare and requantifying using IsoQuant
+Merging transcript assemblies (`.gtf` files) from IsoQuant and StringTie using TAMA to generate a unified `.GTF` file, reannotation the `.GTF` with gffcompare and requantifying using IsoQuant
 Example command:  
 `sbatch --array=1-4 pipeline/05_merge/tama_merge.sh`  
   
 **Output**  
-The main final outputs of the pipeline are the merged `.GTF` file of the sample including the `.tsv` files with transcripts and gene quantifications.
+The main final outputs of the pipeline are the merged `.GTF` file of the samples including the `.tsv` files with transcripts and gene quantifications.
 # Data Structure and Pipeline Usage 
 **Data Struture**    
 Our raw ONT sequencing data are collected and transfered to their respective cohort directories. For example, our NABEC cohort has the following path: `/data/CARD_AUX/LRS_temp/NABEC_RNA` . Within the `NABEC_RNA` directory each sample folder are organized as follow:  
@@ -75,7 +75,7 @@ Our raw ONT sequencing data are collected and transfered to their respective coh
 This file hierarchy allows us to easily retrieve the samples list used to run the pipeline scripts and `.json` file paths which we use to get sequencing summary statistics from [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser).  
   
 **Pipeline Usage**  
-Using the directory structure above we extract make the samples list and `.json` file paths using thee follow command and scripts.  
+Using the directory structure above we generate the samples list and `.json` file paths using the follow command and scripts.  
 - json file paths example command:    
 ```
 find /data/CARD_AUX/LRS_temp/NABEC_RNA/ \  
@@ -95,7 +95,7 @@ output:json_report_paths.txt
 /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA/20250114_2314_3B_PAW72691_179afafe/report_PAW72691_20250114_2320_179afafe.json
 /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA/20250114_2315_3C_PAY68370_975be5bd/report_PAY68370_20250114_2321_975be5bd.json  
 ```  
-- samples list example command:  
+- samples list example script:  
 ```
 while read -r jsonfilepaths; do  
 	SAMPLE_ID=$(basename "$(dirname "$(dirname "$jsonfilepaths")")")  
