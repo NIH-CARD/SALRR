@@ -34,6 +34,7 @@ all_sample_names = samples.iloc[:,0].tolist()
 rule all:
     input:
         expand("assembly/{sample_id}.merged.gtf", sample_id=all_sample_names)
+       #bam = expand("basecalling/{sample_id}.bam", sample_id=all_sample_names)
 
 rule basecall:
     input:
