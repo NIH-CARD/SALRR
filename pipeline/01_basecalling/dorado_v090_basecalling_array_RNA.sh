@@ -36,7 +36,7 @@ mkdir -p "${ONT_UBAM_DIR}"
 # load modules
 # change 0.8.1 to 0.9.0 module (not yet default)
 module load dorado/0.9.0
-module load pod5
+module load pod5/0.3.15
 
 
 # debugging output with output path for unmapped BAM
