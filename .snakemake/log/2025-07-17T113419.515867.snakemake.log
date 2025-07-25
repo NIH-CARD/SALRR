@@ -1,0 +1,68 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+isoquant         2
+merge            2
+stringtie        2
+total            9
+
+Select jobs to execute...
+
+[Thu Jul 17 11:34:21 2025]
+rule alignment:
+    input: rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq
+    output: rawdata/MAPPED/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d_brain_mapped.sorted.bam
+    jobid: 7
+    reason: Missing output files: rawdata/MAPPED/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    threads: 20
+    resources: mem_mb=80000, mem_mib=76294, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+Submitted job 7 with external jobid '62893729'.
+
+[Thu Jul 17 11:34:23 2025]
+rule alignment:
+    input: rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq
+    output: rawdata/MAPPED/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730_brain_mapped.sorted.bam
+    jobid: 3
+    reason: Missing output files: rawdata/MAPPED/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    threads: 20
+    resources: mem_mb=80000, mem_mib=76294, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+Submitted job 3 with external jobid '62893735'.
+[Thu Jul 17 11:36:00 2025]
+Error in rule alignment:
+    jobid: 7
+    input: rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq
+    output: rawdata/MAPPED/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d_brain_mapped.sorted.bam
+    shell:
+        
+        'scripts/alignment.sh'
+            --infile rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq             --outfile rawdata/MAPPED/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d_brain_mapped.sorted.bam             --outdir rawdata/MAPPED/NABEC_KEN-1127_FTX_RNA/             --genome /data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa             --sirvome /data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 62893729
+
+Error executing rule alignment on cluster (jobid: 7, external: 62893729, jobscript: /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.xy3q3p2m/snakejob.alignment.7.sh). For error details see the cluster log and the log files of the involved rule(s).
+[Thu Jul 17 11:36:01 2025]
+Error in rule alignment:
+    jobid: 3
+    input: rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq
+    output: rawdata/MAPPED/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730_brain_mapped.sorted.bam
+    shell:
+        
+        'scripts/alignment.sh'
+            --infile rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq             --outfile rawdata/MAPPED/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730_brain_mapped.sorted.bam             --outdir rawdata/MAPPED/NABEC_KEN-1069_FTX_RNA/             --genome /data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa             --sirvome /data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 62893735
+
+Error executing rule alignment on cluster (jobid: 3, external: 62893735, jobscript: /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.xy3q3p2m/snakejob.alignment.3.sh). For error details see the cluster log and the log files of the involved rule(s).
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2025-07-17T113419.515867.snakemake.log

@@ -1,0 +1,66 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Wed Jul 16 19:00:18 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    jobid: 11
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, gpu=1, gpu_model=v100x
+
+Submitted job 11 with external jobid '62821358'.
+
+[Wed Jul 16 19:00:20 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    jobid: 5
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, gpu=1, gpu_model=v100x
+
+Submitted job 5 with external jobid '62821360'.
+[Wed Jul 16 19:01:57 2025]
+Error in rule basecall:
+    jobid: 11
+    input: rawdata/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    shell:
+        
+        
+        scripts/basecalling.sh             --infile rawdata/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5             --outfile rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam             --outdir rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/             --model dna_r10.4.1_e8.2_400bps_sup@v5.0.0         
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 62821358
+
+Error executing rule basecall on cluster (jobid: 11, external: 62821358, jobscript: /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.r4mrn__5/snakejob.basecall.11.sh). For error details see the cluster log and the log files of the involved rule(s).
+[Wed Jul 16 19:01:58 2025]
+Error in rule basecall:
+    jobid: 5
+    input: rawdata/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    shell:
+        
+        
+        scripts/basecalling.sh             --infile rawdata/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/pod5             --outfile rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam             --outdir rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/             --model dna_r10.4.1_e8.2_400bps_sup@v5.0.0         
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 62821360
+
+Error executing rule basecall on cluster (jobid: 5, external: 62821360, jobscript: /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.r4mrn__5/snakejob.basecall.5.sh). For error details see the cluster log and the log files of the involved rule(s).
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2025-07-16T190016.736496.snakemake.log

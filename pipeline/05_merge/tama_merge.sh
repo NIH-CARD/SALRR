@@ -42,6 +42,7 @@ mkdir -p "${MERGED_DIR}" # Merged assembly output directory
 # load modules
 module load python/3.10
 ml isoquant/3.6.2
+ml gffcompare/0.12.6
 #preprocess stringtie gtf to remove the . from strand column
 #this is necessary for the merge step to work properly
 awk -F '\t' '$7 != "." {print}' ${STR_ASM}/${SAMPLE_ID}_${FLOWCELL}_brain_STR_asm.gtf \

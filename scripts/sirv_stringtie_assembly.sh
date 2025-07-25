@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-
-
-
-# Argument parsing
 usage_error () { echo >&2 "$(basename $0):  $1"; exit 2; }
 assert_argument () { test "$1" != "$EOL" || usage_error "$2 requires an argument"; }
 if [ "$#" != 0 ]; then
@@ -17,7 +13,7 @@ if [ "$#" != 0 ]; then
             --infile) assert_argument "$1" "$opt"; INFILE="$1"; shift;;
             --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
-            --model) assert_argument "$1" "$opt"; MODEL="$1"; shift;;
+            --ref_gtf) assert_argument "$1" "$opt"; REF_GTF="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -33,30 +29,20 @@ if [ "$#" != 0 ]; then
 fi
 
 
+
 # Rest of code
 
 # loading modules
+module load stringtie/2.2.3
 
-module load dorado/0.9.0
-module load pod5/0.3.15
-
-# Create output directory if it does not exist
+# create the output directory if it does not exist
 mkdir -p "${OUTDIR}"
 
-
-# Basecalling with dorado
-dorado basecaller \
-    --no-trim \
-    --estimate-poly-a \
-    -x cuda:all \
-    ${DORADO_MODELS}/${MODEL} \
-    ${INFILE} \
-    --skip-model-compatibility-check \
-    > ${OUTFILE}
-
-
-# Generate sequencing summary reports
-dorado summary \
-    ${OUTFILE} \
-    > ${OUTFILE%.bam}.summary.txt
+# Stringtie Assembly
+stringtie \
+    ${INFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam \
+    -L \
+    -p $SLURM_CPUS_PER_TASK \
+    -G ${REF_GTF} \
+    -o ${OUTFILE}
 

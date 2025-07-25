@@ -17,7 +17,6 @@ if [ "$#" != 0 ]; then
             --infile) assert_argument "$1" "$opt"; INFILE="$1"; shift;;
             --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
-            --model) assert_argument "$1" "$opt"; MODEL="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -33,30 +32,35 @@ if [ "$#" != 0 ]; then
 fi
 
 
+
 # Rest of code
 
 # loading modules
+module load samtools/1.21
+module load pychopper/2.7.10
 
-module load dorado/0.9.0
-module load pod5/0.3.15
 
-# Create output directory if it does not exist
+#making the output directory if it does not exist
+
 mkdir -p "${OUTDIR}"
 
+# Converting BAM to FASTQ using samtools
+samtools fastq \
+  -T* \
+  -@ $SLURM_CPUS_PER_TASK \
+  -n \
+  "${INFILE}" \
+  > "${OUTFILE%.trimmed.fastq}.fastq" || exit 1
 
-# Basecalling with dorado
-dorado basecaller \
-    --no-trim \
-    --estimate-poly-a \
-    -x cuda:all \
-    ${DORADO_MODELS}/${MODEL} \
-    ${INFILE} \
-    --skip-model-compatibility-check \
-    > ${OUTFILE}
+# Running pychopper for trimming
 
+pychopper \
+  -t $SLURM_CPUS_PER_TASK \
+  -m phmm \
+  -k PCS114 \
+  -r "${OUTFILE%.trimmed.fastq}.pdf" \
+  -S "${OUTFILE%.trimmed.fastq}.tsv" \
+  "${OUTFILE%.trimmed.fastq}.fastq" \
+  "${OUTFILE}" 
 
-# Generate sequencing summary reports
-dorado summary \
-    ${OUTFILE} \
-    > ${OUTFILE%.bam}.summary.txt
 

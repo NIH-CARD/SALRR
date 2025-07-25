@@ -1,0 +1,2 @@
+SyntaxError in file /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/snakefile, line 197:
+Command must be given as string after the shell keyword. (snakefile, line 197)

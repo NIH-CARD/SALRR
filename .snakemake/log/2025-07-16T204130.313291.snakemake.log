@@ -1,0 +1,98 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Wed Jul 16 20:41:32 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    jobid: 11
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, gpu=1, gpu_model=v100x
+
+Submitted job 11 with external jobid '62827122'.
+
+[Wed Jul 16 20:41:34 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    jobid: 5
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, gpu=1, gpu_model=v100x
+
+Submitted job 5 with external jobid '62827123'.
+[Wed Jul 16 23:24:25 2025]
+Finished job 11.
+1 of 13 steps (8%) done
+Select jobs to execute...
+
+[Wed Jul 16 23:24:25 2025]
+rule trimming:
+    input: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    output: rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq
+    jobid: 10
+    reason: Missing output files: rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq; Input files updated by another job: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    threads: 10
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+Submitted job 10 with external jobid '62836002'.
+[Wed Jul 16 23:25:22 2025]
+Error in rule trimming:
+    jobid: 10
+    input: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    output: rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq
+    shell:
+        
+        scripts/trimming.sh             --infile rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam             --outfile rawdata/PYCHOPPER/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.trimmed.fastq              --outdir rawdata/PYCHOPPER
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 62836002
+
+Error executing rule trimming on cluster (jobid: 10, external: 62836002, jobscript: /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.5zsaw9xb/snakejob.trimming.10.sh). For error details see the cluster log and the log files of the involved rule(s).
+[Wed Jul 16 23:37:52 2025]
+Finished job 5.
+2 of 13 steps (15%) done
+Select jobs to execute...
+
+[Wed Jul 16 23:37:52 2025]
+rule trimming:
+    input: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    output: rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq
+    jobid: 4
+    reason: Missing output files: rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq; Input files updated by another job: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    threads: 10
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+Submitted job 4 with external jobid '62836568'.
+[Wed Jul 16 23:39:23 2025]
+Error in rule trimming:
+    jobid: 4
+    input: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    output: rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq
+    shell:
+        
+        scripts/trimming.sh             --infile rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam             --outfile rawdata/PYCHOPPER/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.trimmed.fastq              --outdir rawdata/PYCHOPPER
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 62836568
+
+Error executing rule trimming on cluster (jobid: 4, external: 62836568, jobscript: /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.5zsaw9xb/snakejob.trimming.4.sh). For error details see the cluster log and the log files of the involved rule(s).
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2025-07-16T204130.313291.snakemake.log
