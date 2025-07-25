@@ -1,0 +1,40 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Wed Jul 16 17:09:10 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    jobid: 11
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, gpu=1, gpu_model=v100x
+
+Submitted job 11 with external jobid '62811564'.
+
+[Wed Jul 16 17:09:12 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    jobid: 5
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    resources: mem_mb=50000, mem_mib=47684, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, gpu=1, gpu_model=v100x
+
+Submitted job 5 with external jobid '62811565'.
+Terminating processes on user request, this might take some time.
+Complete log: .snakemake/log/2025-07-16T170908.965514.snakemake.log

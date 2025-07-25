@@ -11,4 +11,5 @@ if [[ ! -d snakemake_profile ]]; then
 fi
 
 # Run snakemake
-snakemake --profile snakemake_profile $@ -n
+# snakemake --profile snakemake_profile $@ -n
+snakemake --profile snakemake_profile -j 2

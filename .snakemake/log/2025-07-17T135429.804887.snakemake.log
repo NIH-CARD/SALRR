@@ -1,0 +1,7 @@
+Building DAG of jobs...
+MissingInputException in rule merge in file /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/snakefile, line 198:
+Missing input files for rule merge:
+    output: rawdata/ASSEMBLY/MERGED/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730_annotated.gtf
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    affected files:
+        rawdata/ASSEMBLY/ISOQUANT/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.transcript_models.gtf

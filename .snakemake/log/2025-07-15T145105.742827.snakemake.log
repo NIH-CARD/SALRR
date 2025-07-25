@@ -1,0 +1,44 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Tue Jul 15 14:51:06 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    jobid: 11
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    resources: mem_mb=300000, mem_mib=286103, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, runtime=4320, gpu=2, slurm_partition=norm
+
+Error submitting jobscript (exit code 1):
+
+
+
+[Tue Jul 15 14:51:08 2025]
+rule basecall:
+    input: rawdata/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA/20250114_2319_2A_PAW72725_5119b730/pod5
+    output: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    jobid: 5
+    reason: Missing output files: rawdata/ONT_UBAM/NABEC_KEN-1069_FTX_RNA/NABEC_KEN-1069_FTX_RNA_20250114_2319_2A_PAW72725_5119b730.bam
+    wildcards: sample_id=NABEC_KEN-1069_FTX_RNA, flowcell_id=20250114_2319_2A_PAW72725_5119b730
+    resources: mem_mb=300000, mem_mib=286103, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, runtime=4320, gpu=2, slurm_partition=norm
+
+Error submitting jobscript (exit code 1):
+
+
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2025-07-15T145105.742827.snakemake.log

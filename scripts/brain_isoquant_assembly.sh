@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-
-
-
-# Argument parsing
 usage_error () { echo >&2 "$(basename $0):  $1"; exit 2; }
 assert_argument () { test "$1" != "$EOL" || usage_error "$2 requires an argument"; }
 if [ "$#" != 0 ]; then
@@ -15,9 +11,10 @@ if [ "$#" != 0 ]; then
 
             # Your options go here.
             --infile) assert_argument "$1" "$opt"; INFILE="$1"; shift;;
-            --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
-            --model) assert_argument "$1" "$opt"; MODEL="$1"; shift;;
+            --genome) assert_argument "$1" "$opt"; GENOME="$1"; shift;;
+            --genedb) assert_argument "$1" "$opt"; GENEDB="$1"; shift;;
+            --prefix) assert_argument "$1" "$opt"; PREFIX="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -33,30 +30,28 @@ if [ "$#" != 0 ]; then
 fi
 
 
+
 # Rest of code
 
 # loading modules
 
-module load dorado/0.9.0
-module load pod5/0.3.15
+module load isoquant/3.6.2
 
-# Create output directory if it does not exist
+# making the output directory if it does not exist already
+
 mkdir -p "${OUTDIR}"
 
+# Run Isoquant Assembly
 
-# Basecalling with dorado
-dorado basecaller \
-    --no-trim \
-    --estimate-poly-a \
-    -x cuda:all \
-    ${DORADO_MODELS}/${MODEL} \
-    ${INFILE} \
-    --skip-model-compatibility-check \
-    > ${OUTFILE}
-
-
-# Generate sequencing summary reports
-dorado summary \
-    ${OUTFILE} \
-    > ${OUTFILE%.bam}.summary.txt
-
+isoquant.py \
+    -t 60 \
+    --reference ${GENOME} \
+    --genedb ${GENEDB} \
+    --complete_genedb \
+    --bam ${INFILE} \
+    --data_type nanopore \
+    --check_canonical \
+    --sqanti_output \
+    --prefix ${PREFIX} \
+    --count_exons \
+    --output ${OUTDIR}
