@@ -56,50 +56,50 @@ minimap2 \
     | samtools view -b - \
     | samtools sort \
     -@ $SLURM_CPUS_PER_TASK - \
-    > "${OUTFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam"
+    > "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam"
 
 # index the bam, exit if it fails
-samtools index "${OUTFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" || exit 1
+samtools index "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" || exit 1
 
 # filter the SIRV mapped reads
 samtools view \
     -q 40 \
     -F 2304 \
     -b \
-    "${OUTFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
+    "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
     -@ $SLURM_CPUS_PER_TASK - \
-    > "${OUTFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam"
+    > "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam"
 
 # index the mapped filtered sirv bams, exit if it fails
-samtools index "${OUTFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" || exit 1
+samtools index "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" || exit 1
 
-# extract unmapped brain reads, exit if it fails
+# extract unmapped human reads, exit if it fails
 samtools view \
     -f 4 \
     -b \
-    "${OUTFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
+    "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
     -@ $SLURM_CPUS_PER_TASK - \
-    > "${OUTFILE%_brain_mapped.sorted.bam}_brain_unmapped.sorted.bam" || exit 1
+    > "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" || exit 1
 
 # index the bam, exit if it fails
-samtools index "${OUTFILE%_brain_mapped.sorted.bam}_brain_unmapped.sorted.bam" || exit 1
+samtools index "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" || exit 1
 
-# convert unmapped brain reads to fastq, exit if it fails
+# convert unmapped human reads to fastq, exit if it fails
 samtools fastq \
     -T* \
     -@ $SLURM_CPUS_PER_TASK \
     -n \
-    "${OUTFILE%_brain_mapped.sorted.bam}_brain_unmapped.sorted.bam" \
-    > "${INFILE%.trimmed.fastq}_brain_unmapped.fastq" || exit 1
+    "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" \
+    > "${INFILE%.trimmed.fastq}_human_unmapped.fastq" || exit 1
 
-# map the brain reads to the genome
+# map the human reads to the genome
 minimap2 \
     -t $SLURM_CPUS_PER_TASK \
     -ax splice \
     -k 14 \
     -uf \
     "${GENOME}" \
-    "${INFILE%.trimmed.fastq}_brain_unmapped.fastq" - \
+    "${INFILE%.trimmed.fastq}_human_unmapped.fastq" - \
     | samtools view \
     -q 40 \
     -F 2304 \
@@ -108,6 +108,6 @@ minimap2 \
     -@ $SLURM_CPUS_PER_TASK - \
     > "${OUTFILE}" || exit 1
 
-# index the brain mapped bam, exit if it fails
+# index the human mapped bam, exit if it fails
 samtools index \
     "${OUTFILE}" || exit 1

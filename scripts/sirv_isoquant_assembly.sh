@@ -47,7 +47,7 @@ isoquant.py \
     -t 60 \
     --reference ${SIRVOME} \
     --genedb ${GENEDB} \
-    --bam "${INFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" \
+    --bam "${INFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" \
     --data_type nanopore \
     --check_canonical \
     --sqanti_output \
