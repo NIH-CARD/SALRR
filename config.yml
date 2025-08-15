@@ -14,7 +14,7 @@ genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set
 sirvome: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta'
 human_genedb: '/data/CARDPB/resources/hg38/gencode.v43.annotation.gtf'
 sirv_genedb: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.corrected.gtf'
-tama_scripts: 'scripts/'
+script_dir: 'scripts/'
 
 # you could change the the source sample file but specify the path and name accordingly
-sample_file: 'basecalling_sample_sheet_jan_19.txt'
+sample_file: 'input_example.txt'
