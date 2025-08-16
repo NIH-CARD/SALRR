@@ -12,4 +12,4 @@ fi
 
 # Run snakemake
 # snakemake --profile snakemake_profile $@ -n
-snakemake --profile snakemake_profile -j 2
+snakemake --profile snakemake_profile
