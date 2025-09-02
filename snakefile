@@ -52,8 +52,7 @@ rule basecall:
     output:
         ubam = config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
     resources:
-        runtime=7200, mem_mb=150000, gpu=2, gpu_model='a100', disk_mb=50000,
-        # runtime=4320, mem_mb=50000, gpu=1, gpu_model='v100x', disk_mb=50000
+        runtime=7200, mem_mb=150000, gpu=2, gpu_model='a100', disk_mb=50000
     threads: 30
     params:
         model = config.dorado_model,
@@ -75,10 +74,9 @@ rule trimming:
         fastq = config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
     params:
         outdir = config.pychopper_dir
-    threads: 60 #10
+    threads: 60
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
-        # runtime=4320, mem_mb=50000, disk_mb=50000
     shell: 
         """
         scripts/trimming.sh \
@@ -92,10 +90,9 @@ rule alignment:
         fastq = config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq'
     output:  
         mapped_bam = config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain_mapped.sorted.bam'
-    threads: 120 #20
+    threads: 120
     resources:
         runtime=4320, mem_mb=200000, disk_mb=100000
-        # runtime=4320, mem_mb=80000, disk_mb=50000
     params:
         mapped_dir = config.mapping_dir + '/{sample_id}/',
         human_fasta = config.genome,
@@ -116,7 +113,7 @@ rule stringtie:
     output:
         sirv_stringtie_gtf = config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf',
         brain_stringtie_gtf = config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain.stringtie.gtf'
-    threads: 60 #20
+    threads: 60
     params:
         human_ref_gtf = config.human_genedb,
         sirv_ref_gtf = config.sirv_genedb,
@@ -124,7 +121,6 @@ rule stringtie:
         brain_stringtie_dir = config.stringtie_dir + '/{sample_id}/'
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
-        # runtime=240, mem_mb=50000, disk_mb=50000, slurm_partition='quick'
     shell: 
         """
         scripts/sirv_stringtie_assembly.sh \
@@ -145,7 +141,7 @@ rule isoquant:
         mapped_bam = config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain_mapped.sorted.bam'
     output:
         brain_isoquant_gtf = config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
-    threads: 60 #10
+    threads: 60
     params:
         prefix = '{sample_id}_{flowcell_id}',
         sirv_prefix = '{sample_id}_{flowcell_id}_sirv',
@@ -157,7 +153,6 @@ rule isoquant:
         brain_isoquant_dir = config.isoquant_dir + '/{sample_id}/'
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
-        # runtime=4320, mem_mb=50000, disk_mb=50000
     shell: 
         """
         scripts/sirv_isoquant_assembly.sh \
@@ -179,7 +174,7 @@ rule merge:
         brain_isoquant_gtf = config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
         brain_stringtie_gtf = config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain.stringtie.gtf',
         mapped_bam = config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain_mapped.sorted.bam'
-    threads: 120 #20
+    threads: 120
     params:
         prefix = '{sample_id}_{flowcell_id}',
         human_fasta = config.genome,
@@ -188,7 +183,6 @@ rule merge:
         merge_dir = config.merge_dir + '/{sample_id}',
     resources:
         runtime=4320, mem_mb=400000, disk_mb=100000
-        # runtime=4320, mem_mb=20000, disk_mb=10000
     output:
         annotated_gtf = config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
 
