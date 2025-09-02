@@ -52,8 +52,9 @@ rule basecall:
     output:
         ubam = config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
     resources:
-        runtime=4320, mem_mb=300000, gpu=6, gpu_model='v100x', disk_mb=50000
+        runtime=7200, mem_mb=150000, gpu=2, gpu_model='a100', disk_mb=50000,
         # runtime=4320, mem_mb=50000, gpu=1, gpu_model='v100x', disk_mb=50000
+    threads: 30
     params:
         model = config.dorado_model,
         outdir = config.ont_ubam + '/{sample_id}/'
@@ -122,7 +123,7 @@ rule stringtie:
         sir_stringtie_dir = config.stringtie_dir + '/{sample_id}/sirv/',
         brain_stringtie_dir = config.stringtie_dir + '/{sample_id}/'
     resources:
-        runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='quick'
+        runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
         # runtime=240, mem_mb=50000, disk_mb=50000, slurm_partition='quick'
     shell: 
         """

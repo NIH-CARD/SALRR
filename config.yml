@@ -9,7 +9,7 @@ isoquant_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUAN
 stringtie_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE'
 merge_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED'
 
-#these directories should be kept unchanged
+# these directories should be kept unchanged
 genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
 sirvome: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta'
 human_genedb: '/data/CARDPB/resources/hg38/gencode.v43.annotation.gtf'

@@ -1,0 +1,43 @@
+[+] Loading snakemake  7.32.4 
+Using profile snakemake_profile for setting default command line arguments.
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Sun Aug 24 19:28:56 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-00-34_FTX_RNA/NABEC_SH-00-34_FTX_RNA/20250114_2321_2E_PAY64520_2d2a8c92/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-00-34_FTX_RNA/NABEC_SH-00-34_FTX_RNA_20250114_2321_2E_PAY64520_2d2a8c92.bam
+    jobid: 11
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-00-34_FTX_RNA/NABEC_SH-00-34_FTX_RNA_20250114_2321_2E_PAY64520_2d2a8c92.bam
+    wildcards: sample_id=NABEC_SH-00-34_FTX_RNA, flowcell_id=20250114_2321_2E_PAY64520_2d2a8c92
+    resources: mem_mb=150000, mem_mib=143052, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=7200, gpu=2, gpu_model=a100
+
+basecall: submission command "sbatch --cpus-per-task=1 --mem=150000 --time=7200 --gres=lscratch:49,gpu:a100:2 --output=logs/basecall-%j.out --partition=gpu /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.e3tth1l2/snakejob.basecall.11.sh
+Submitted job 11 with external jobid '65732085'.
+
+[Sun Aug 24 19:29:00 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    jobid: 5
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    resources: mem_mb=150000, mem_mib=143052, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=7200, gpu=2, gpu_model=a100
+
+basecall: submission command "sbatch --cpus-per-task=1 --mem=150000 --time=7200 --gres=lscratch:49,gpu:a100:2 --output=logs/basecall-%j.out --partition=gpu /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.e3tth1l2/snakejob.basecall.5.sh
+Submitted job 5 with external jobid '65732086'.
+slurmstepd: error: *** JOB 65732060 ON cn0018 CANCELLED AT 2025-08-26T12:39:52 ***
