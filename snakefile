@@ -49,7 +49,7 @@ rule all:
 
 rule basecall:
     input:
-        pod5 = config.base_dir + '/{sample_id}/{sample_id}/{flowcell_id}/pod5'
+        pod5 = config.base_dir + '{sample_id}/{sample_id}/{flowcell_id}/pod5'
     output:
         ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
     resources:
