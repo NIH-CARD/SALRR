@@ -54,6 +54,7 @@ rule basecall:
         ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
     resources:
         runtime=4320, mem_mb=150000, gpu=4, gpu_model='a100', disk_mb=50000
+    threads: 30
     params:
         model = config.dorado_model,
         outdir = config.base_dir + config.ont_ubam + '/{sample_id}/'
