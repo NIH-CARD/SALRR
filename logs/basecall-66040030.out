@@ -1,0 +1,38 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 30
+Rules claiming more threads will be scaled down.
+Provided resources: mem_mb=150000, mem_mib=143052, disk_mb=50000, disk_mib=47684, gpu=2
+Select jobs to execute...
+
+[Wed Aug 27 21:36:02 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA/20250114_2315_3C_PAY68370_975be5bd/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.bam
+    jobid: 0
+    reason: Forced execution
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 30
+    resources: mem_mb=150000, mem_mib=143052, disk_mb=50000, disk_mib=47684, tmpdir=/lscratch/66040030/tmp, runtime=7200, gpu=2, gpu_model=a100
+
+[+] Loading dorado  0.9.0 
+[+] Loading singularity  4.2.2  on cn0082 
+[+] Loading pod5  0.3.15 
+[2025-08-27 21:36:05.078] [info] Running: "basecaller" "--no-trim" "--estimate-poly-a" "-x" "cuda:all" "/fdb/dorado/0.9.0/dna_r10.4.1_e8.2_400bps_sup@v5.0.0" "/data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA/20250114_2315_3C_PAY68370_975be5bd/pod5" "--skip-model-compatibility-check"
+[2025-08-27 21:36:05.206] [info] > Creating basecall pipeline
+[2025-08-27 21:36:09.716] [info] Calculating optimized batch size for GPU "NVIDIA A100-SXM4-80GB" and model /fdb/dorado/0.9.0/dna_r10.4.1_e8.2_400bps_sup@v5.0.0. Full benchmarking will run for this device, which may take some time.
+[2025-08-27 21:36:09.718] [info] Calculating optimized batch size for GPU "NVIDIA A100-SXM4-80GB" and model /fdb/dorado/0.9.0/dna_r10.4.1_e8.2_400bps_sup@v5.0.0. Full benchmarking will run for this device, which may take some time.
+[2025-08-27 21:36:15.306] [info] cuda:0 using chunk size 11520, batch size 608
+[2025-08-27 21:36:15.306] [info] cuda:1 using chunk size 11520, batch size 672
+[2025-08-27 21:36:15.781] [info] cuda:0 using chunk size 5760, batch size 608
+[2025-08-27 21:36:15.836] [info] cuda:1 using chunk size 5760, batch size 672
+[2025-08-28 14:01:53.873] [info] > Finished in (ms): 59137463
+[2025-08-28 14:01:53.876] [info] > Simplex reads basecalled: 71473195
+[2025-08-28 14:01:53.876] [info] > Simplex reads filtered: 43
+[2025-08-28 14:01:53.876] [info] > Basecalled @ Samples/s: 1.932958e+07
+[2025-08-28 14:01:53.876] [info] > PolyA tails called 65300193, not called 6186841, avg tail length 116
+[2025-08-28 14:02:09.687] [info] > Finished
+[2025-08-28 14:02:15.705] [info] Running: "summary" "/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.bam"
+[Thu Aug 28 14:19:19 2025]
+Finished job 0.
+1 of 1 steps (100%) done

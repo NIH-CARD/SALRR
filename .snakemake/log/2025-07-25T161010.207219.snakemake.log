@@ -1,0 +1,44 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Fri Jul 25 16:10:11 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-00-34_FTX_RNA/NABEC_SH-00-34_FTX_RNA/20250114_2321_2E_PAY64520_2d2a8c92/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-00-34_FTX_RNA/NABEC_SH-00-34_FTX_RNA_20250114_2321_2E_PAY64520_2d2a8c92.bam
+    jobid: 11
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-00-34_FTX_RNA/NABEC_SH-00-34_FTX_RNA_20250114_2321_2E_PAY64520_2d2a8c92.bam
+    wildcards: sample_id=NABEC_SH-00-34_FTX_RNA, flowcell_id=20250114_2321_2E_PAY64520_2d2a8c92
+    resources: mem_mb=300000, mem_mib=286103, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=7200, gpu=6, gpu_model=v100x
+
+Error submitting jobscript (exit code 1):
+
+
+
+[Fri Jul 25 16:10:14 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA/20250114_2320_2C_PAY66952_ea90759d/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    jobid: 5
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_KEN-1127_FTX_RNA/NABEC_KEN-1127_FTX_RNA_20250114_2320_2C_PAY66952_ea90759d.bam
+    wildcards: sample_id=NABEC_KEN-1127_FTX_RNA, flowcell_id=20250114_2320_2C_PAY66952_ea90759d
+    resources: mem_mb=300000, mem_mib=286103, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=7200, gpu=6, gpu_model=v100x
+
+Error submitting jobscript (exit code 1):
+
+
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2025-07-25T161010.207219.snakemake.log

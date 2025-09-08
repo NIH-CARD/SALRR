@@ -76,6 +76,8 @@ rule trimming:
     params:
         outdir = config.base_dir + config.pychopper_dir
     threads: 60 #10
+        outdir = config.pychopper_dir
+    threads: 60
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
         # runtime=4320, mem_mb=50000, disk_mb=50000
@@ -93,6 +95,8 @@ rule alignment:
     output:  
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     threads: 120 #20
+        mapped_bam = config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain_mapped.sorted.bam'
+    threads: 120
     resources:
         runtime=4320, mem_mb=200000, disk_mb=100000
         # runtime=4320, mem_mb=80000, disk_mb=50000
@@ -117,6 +121,9 @@ rule stringtie:
         sirv_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf',
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf'
     threads: 60 #20
+        sirv_stringtie_gtf = config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf',
+        brain_stringtie_gtf = config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain.stringtie.gtf'
+    threads: 60
     params:
         human_ref_gtf = config.human_genedb,
         sirv_ref_gtf = config.sirv_genedb,
@@ -146,6 +153,8 @@ rule isoquant:
     output:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
     threads: 60 #10
+        brain_isoquant_gtf = config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
+    threads: 60
     params:
         prefix = '{sample_id}_{flowcell_id}',
         sirv_prefix = '{sample_id}_{flowcell_id}_sirv',
@@ -180,6 +189,10 @@ rule merge:
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf',
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     threads: 120 #20
+        brain_isoquant_gtf = config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
+        brain_stringtie_gtf = config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain.stringtie.gtf',
+        mapped_bam = config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_brain_mapped.sorted.bam'
+    threads: 120
     params:
         prefix = '{sample_id}_{flowcell_id}',
         human_fasta = config.genome,

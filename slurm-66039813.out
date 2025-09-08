@@ -1,0 +1,232 @@
+[+] Loading snakemake  7.32.4 
+Using profile snakemake_profile for setting default command line arguments.
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 2
+Job stats:
+job          count
+---------  -------
+alignment        2
+all              1
+basecall         2
+isoquant         2
+merge            2
+stringtie        2
+trimming         2
+total           13
+
+Select jobs to execute...
+
+[Wed Aug 27 21:20:39 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA/20250114_2315_3C_PAY68370_975be5bd/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.bam
+    jobid: 11
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.bam
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 30
+    resources: mem_mb=150000, mem_mib=143052, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=7200, gpu=2, gpu_model=a100
+
+basecall: submission command "sbatch --cpus-per-task=30 --mem=150000 --time=7200 --gres=lscratch:49,gpu:a100:2 --output=logs/basecall-%j.out --partition=gpu /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.basecall.11.sh
+Submitted job 11 with external jobid '66040030'.
+
+[Wed Aug 27 21:20:42 2025]
+rule basecall:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA/20250114_2314_3B_PAW72691_179afafe/pod5
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.bam
+    jobid: 5
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.bam
+    wildcards: sample_id=NABEC_SH-97-09_FTX_RNA, flowcell_id=20250114_2314_3B_PAW72691_179afafe
+    threads: 30
+    resources: mem_mb=150000, mem_mib=143052, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=7200, gpu=2, gpu_model=a100
+
+basecall: submission command "sbatch --cpus-per-task=30 --mem=150000 --time=7200 --gres=lscratch:49,gpu:a100:2 --output=logs/basecall-%j.out --partition=gpu /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.basecall.5.sh
+Submitted job 5 with external jobid '66040033'.
+[Thu Aug 28 14:20:00 2025]
+Finished job 11.
+1 of 13 steps (8%) done
+Select jobs to execute...
+
+[Thu Aug 28 14:20:00 2025]
+rule trimming:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.trimmed.fastq
+    jobid: 10
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.trimmed.fastq; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.bam
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 60
+    resources: mem_mb=120000, mem_mib=114441, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+trimming: submission command "sbatch --cpus-per-task=60 --mem=120000 --time=4320 --gres=lscratch:49 --output=logs/trimming-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.trimming.10.sh
+Submitted job 10 with external jobid '66115396'.
+[Thu Aug 28 20:22:58 2025]
+Finished job 5.
+2 of 13 steps (15%) done
+Select jobs to execute...
+
+[Thu Aug 28 20:22:58 2025]
+rule trimming:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.trimmed.fastq
+    jobid: 4
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.trimmed.fastq; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.bam
+    wildcards: sample_id=NABEC_SH-97-09_FTX_RNA, flowcell_id=20250114_2314_3B_PAW72691_179afafe
+    threads: 60
+    resources: mem_mb=120000, mem_mib=114441, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+trimming: submission command "sbatch --cpus-per-task=60 --mem=120000 --time=4320 --gres=lscratch:49 --output=logs/trimming-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.trimming.4.sh
+Submitted job 4 with external jobid '66153931'.
+[Fri Aug 29 02:58:30 2025]
+Finished job 10.
+3 of 13 steps (23%) done
+Select jobs to execute...
+
+[Fri Aug 29 02:58:30 2025]
+rule alignment:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.trimmed.fastq
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam
+    jobid: 9
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.trimmed.fastq
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 120
+    resources: mem_mb=200000, mem_mib=190735, disk_mb=100000, disk_mib=95368, tmpdir=<TBD>, runtime=4320
+
+alignment: submission command "sbatch --cpus-per-task=120 --mem=200000 --time=4320 --gres=lscratch:98 --output=logs/alignment-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.alignment.9.sh
+Submitted job 9 with external jobid '66174882'.
+[Fri Aug 29 08:06:56 2025]
+Finished job 9.
+4 of 13 steps (31%) done
+Select jobs to execute...
+
+[Fri Aug 29 08:06:56 2025]
+rule isoquant:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.transcript_models.gtf
+    jobid: 8
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.transcript_models.gtf; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 60
+    resources: mem_mb=120000, mem_mib=114441, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+isoquant: submission command "sbatch --cpus-per-task=60 --mem=120000 --time=4320 --gres=lscratch:49 --output=logs/isoquant-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.isoquant.8.sh
+Submitted job 8 with external jobid '66185940'.
+[Fri Aug 29 10:33:56 2025]
+Finished job 8.
+5 of 13 steps (38%) done
+Select jobs to execute...
+
+[Fri Aug 29 10:33:56 2025]
+rule stringtie:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-53_FTX_RNA/sirv/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_sirv.stringtie.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain.stringtie.gtf
+    jobid: 12
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain.stringtie.gtf; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 60
+    resources: mem_mb=120000, mem_mib=114441, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, slurm_partition=norm
+
+stringtie: submission command "sbatch --cpus-per-task=60 --mem=120000 --time=4320 --gres=lscratch:49 --output=logs/stringtie-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.stringtie.12.sh
+Submitted job 12 with external jobid '66199089'.
+[Fri Aug 29 10:55:27 2025]
+Finished job 12.
+6 of 13 steps (46%) done
+Select jobs to execute...
+
+[Fri Aug 29 10:55:27 2025]
+rule merge:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.transcript_models.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain.stringtie.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.annotated.gtf
+    jobid: 7
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.annotated.gtf; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain_mapped.sorted.bam, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd_brain.stringtie.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.transcript_models.gtf
+    wildcards: sample_id=NABEC_SH-97-53_FTX_RNA, flowcell_id=20250114_2315_3C_PAY68370_975be5bd
+    threads: 120
+    resources: mem_mb=400000, mem_mib=381470, disk_mb=100000, disk_mib=95368, tmpdir=<TBD>, runtime=4320
+
+merge: submission command "sbatch --cpus-per-task=120 --mem=400000 --time=4320 --gres=lscratch:98 --output=logs/merge-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.merge.7.sh
+Submitted job 7 with external jobid '66201690'.
+[Fri Aug 29 13:05:00 2025]
+Finished job 4.
+7 of 13 steps (54%) done
+Select jobs to execute...
+
+[Fri Aug 29 13:05:00 2025]
+rule alignment:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.trimmed.fastq
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    jobid: 3
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.trimmed.fastq
+    wildcards: sample_id=NABEC_SH-97-09_FTX_RNA, flowcell_id=20250114_2314_3B_PAW72691_179afafe
+    threads: 120
+    resources: mem_mb=200000, mem_mib=190735, disk_mb=100000, disk_mib=95368, tmpdir=<TBD>, runtime=4320
+
+alignment: submission command "sbatch --cpus-per-task=120 --mem=200000 --time=4320 --gres=lscratch:98 --output=logs/alignment-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.alignment.3.sh
+Submitted job 3 with external jobid '66215598'.
+[Fri Aug 29 20:58:27 2025]
+Finished job 7.
+8 of 13 steps (62%) done
+[Fri Aug 29 22:04:58 2025]
+Finished job 3.
+9 of 13 steps (69%) done
+Select jobs to execute...
+
+[Fri Aug 29 22:04:58 2025]
+rule isoquant:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.transcript_models.gtf
+    jobid: 2
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.transcript_models.gtf; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_SH-97-09_FTX_RNA, flowcell_id=20250114_2314_3B_PAW72691_179afafe
+    threads: 60
+    resources: mem_mb=120000, mem_mib=114441, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320
+
+isoquant: submission command "sbatch --cpus-per-task=60 --mem=120000 --time=4320 --gres=lscratch:49 --output=logs/isoquant-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.isoquant.2.sh
+Submitted job 2 with external jobid '66262488'.
+
+[Fri Aug 29 22:04:59 2025]
+rule stringtie:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-09_FTX_RNA/sirv/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_sirv.stringtie.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain.stringtie.gtf
+    jobid: 6
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain.stringtie.gtf; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_SH-97-09_FTX_RNA, flowcell_id=20250114_2314_3B_PAW72691_179afafe
+    threads: 60
+    resources: mem_mb=120000, mem_mib=114441, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=4320, slurm_partition=norm
+
+stringtie: submission command "sbatch --cpus-per-task=60 --mem=120000 --time=4320 --gres=lscratch:49 --output=logs/stringtie-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.stringtie.6.sh
+Submitted job 6 with external jobid '66262491'.
+[Fri Aug 29 22:12:56 2025]
+Finished job 6.
+10 of 13 steps (77%) done
+[Sat Aug 30 01:40:27 2025]
+Finished job 2.
+11 of 13 steps (85%) done
+Select jobs to execute...
+
+[Sat Aug 30 01:40:27 2025]
+rule merge:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.transcript_models.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain.stringtie.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    output: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.annotated.gtf
+    jobid: 1
+    reason: Missing output files: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.annotated.gtf; Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.transcript_models.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain.stringtie.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe_brain_mapped.sorted.bam
+    wildcards: sample_id=NABEC_SH-97-09_FTX_RNA, flowcell_id=20250114_2314_3B_PAW72691_179afafe
+    threads: 120
+    resources: mem_mb=400000, mem_mib=381470, disk_mb=100000, disk_mib=95368, tmpdir=<TBD>, runtime=4320
+
+merge: submission command "sbatch --cpus-per-task=120 --mem=400000 --time=4320 --gres=lscratch:98 --output=logs/merge-%j.out --partition=norm /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.wj5b0cqc/snakejob.merge.1.sh
+Submitted job 1 with external jobid '66267394'.
+[Sat Aug 30 08:37:58 2025]
+Finished job 1.
+12 of 13 steps (92%) done
+Select jobs to execute...
+
+[Sat Aug 30 08:37:58 2025]
+localrule all:
+    input: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.annotated.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.annotated.gtf
+    jobid: 0
+    reason: Input files updated by another job: /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-09_FTX_RNA/NABEC_SH-97-09_FTX_RNA_20250114_2314_3B_PAW72691_179afafe.annotated.gtf, /data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED/NABEC_SH-97-53_FTX_RNA/NABEC_SH-97-53_FTX_RNA_20250114_2315_3C_PAY68370_975be5bd.annotated.gtf
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=/tmp
+
+[Sat Aug 30 08:37:58 2025]
+Finished job 0.
+13 of 13 steps (100%) done
+Complete log: .snakemake/log/2025-08-27T212038.782002.snakemake.log

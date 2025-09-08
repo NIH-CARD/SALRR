@@ -1,0 +1,12 @@
+#!/bin/bash
+# properties = {"type": "single", "rule": "basecall", "local": false, "input": ["/data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-03-17_FTX_RNA_test/NABEC_SH-03-17_FTX_RNA_test/20250116_1843_3G_PAY64563_27732d10_test/pod5"], "output": ["/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-03-17_FTX_RNA_test/NABEC_SH-03-17_FTX_RNA_test_20250116_1843_3G_PAY64563_27732d10_test.bam"], "wildcards": {"sample_id": "NABEC_SH-03-17_FTX_RNA_test", "flowcell_id": "20250116_1843_3G_PAY64563_27732d10_test"}, "params": {"model": "dna_r10.4.1_e8.2_400bps_sup@v5.0.0", "outdir": "/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM/NABEC_SH-03-17_FTX_RNA_test/"}, "log": [], "threads": 30, "resources": {"mem_mb": 150000, "mem_mib": 143052, "disk_mb": 50000, "disk_mib": 47684, "tmpdir": "<TBD>", "runtime": 7200, "gpu": 2, "gpu_model": "a100"}, "jobid": 5, "cluster": {}}
+
+# if lscratch exists use it for tempdir
+if [[ -d "/lscratch/$SLURM_JOB_ID" ]] ; then
+    tmp="/lscratch/$SLURM_JOB_ID/tmp"
+    mkdir "$tmp"
+    export TMPDIR="$tmp"
+fi
+
+cd /vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA && /usr/local/apps/snakemake/conda/envs/7.32.4/bin/python3.11 -m snakemake --snakefile '/vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/snakefile' --target-jobs 'basecall:sample_id=NABEC_SH-03-17_FTX_RNA_test,flowcell_id=20250116_1843_3G_PAY64563_27732d10_test' --allowed-rules 'basecall' --cores 'all' --attempt 1 --force-use-threads  --resources 'mem_mb=150000' 'mem_mib=143052' 'disk_mb=50000' 'disk_mib=47684' 'gpu=2' --wait-for-files '/vf/users/CARD_AUX/LRS_temp/NABEC_RNA/CARDlongread_ONT_long_read_RNA/.snakemake/tmp.1bd_wtuv' '/data/CARD_AUX/LRS_temp/NABEC_RNA/NABEC_SH-03-17_FTX_RNA_test/NABEC_SH-03-17_FTX_RNA_test/20250116_1843_3G_PAY64563_27732d10_test/pod5' --force --keep-target-files --keep-remote --max-inventory-time 0 --nocolor --notemp --no-hooks --nolock --ignore-incomplete --rerun-triggers 'input' 'software-env' 'mtime' 'code' 'params' --skip-script-cleanup  --conda-frontend 'mamba' --singularity-args ' --cleanenv' --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --latency-wait 240 --scheduler 'greedy' --scheduler-solver-path '/usr/local/apps/snakemake/conda/envs/7.32.4/bin' --default-resources 'mem_mb=max(2*input.size_mb, 1000)' 'disk_mb=max(2*input.size_mb, 1000)' 'tmpdir=system_tmpdir' --mode 2 && exit 0 || exit 1
+
