@@ -1,13 +1,13 @@
 # You could change these directories as you see fit
 base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA'
-ont_ubam: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ONT_UBAM'
+ont_ubam: 'snakemake/ONT_UBAM'
 dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
-pychopper_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/PYCHOPPER'
-mapping_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/MAPPED'
-assembly_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/'
-isoquant_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/ISOQUANT'
-stringtie_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/STRINGTIE'
-merge_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SNAKEMAKE_TEST/ASSEMBLY/MERGED'
+pychopper_dir: 'snakemake/PYCHOPPER'
+mapping_dir: 'snakemake/MAPPED'
+assembly_dir: 'snakemake/ASSEMBLY/'
+isoquant_dir: 'snakemake/ASSEMBLY/ISOQUANT'
+stringtie_dir: 'snakemake/ASSEMBLY/STRINGTIE'
+merge_dir: 'snakemake/ASSEMBLY/MERGED'
 
 # these directories should be kept unchanged
 genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
