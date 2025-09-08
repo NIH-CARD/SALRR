@@ -1,5 +1,5 @@
 # You could change these directories as you see fit
-base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA'
+base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
 ont_ubam: 'snakemake/ONT_UBAM'
 dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
 pychopper_dir: 'snakemake/PYCHOPPER'
