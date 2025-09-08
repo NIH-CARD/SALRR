@@ -1,0 +1,6 @@
+.DS_Store
+.snakemake*
+logs/*
+snakemake/*
+slurm-*.out
+dag.pdf

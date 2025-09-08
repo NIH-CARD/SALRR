@@ -3,9 +3,9 @@
 
 **Overview**
 
-This repository provides a modular and comprehensive pipeline designed for processing Oxford Nanopore Technologies (ONT) long-read RNA sequencing data, optimized for human brain samples. It includes essential steps such as base calling, read trimming, rescue and reorientation, mapping, transcript assembly, and the merging of assembled transcripts.
+This repository provides a modular and comprehensive pipeline designed for processing Oxford Nanopore Technologies (ONT) long-read RNA sequencing data, optimized for human brain samples. It includes essential steps such as basecalling, read trimming, rescue and reorientation, genome alignment, transcript assembly, quantification, and the merging of assembled transcripts.
 
-Currently, the pipeline is implemented as a series of individual scripts, each handling a distinct step. The ultimate goal is to integrate these components into a robust Snakemake workflow to improve reproducibility, scalability, and ease of use; supporting the transcriptomics efforts of NIA CARD and the broader research community.
+This pipeline was developed in order to create a robust Snakemake workflow to improve reproducibility, scalability, and ease of use; supporting the transcriptomics efforts of NIA CARD and the broader research community.
 
 **Requirements**
 
@@ -13,13 +13,13 @@ Ensure the following dependencies and tools are installed before running the pip
    - Dorado (base calling)  
    - Pychopper (read trimming, rescue and orientation)  
    - Minimap2 (Mapping)  
-   - IsoQuant(transcript assembly)  
+   - IsoQuant (transcript assembly and quantification)  
    - StringTie (transcript assembly)  
-   - TAMA , Gffcompre (assembly merging and reannotation)  
+   - TAMA, gffcompare (assembly merging and reannotation)  
 
-Addition dependencies and tools:  
-   - CARD_Long_read_report_parser(sequencing report parsing and visualization)   
-   - SIRVsuite(SIRV RNA Spike-in Control QC)  
+Additional dependencies and tools:  
+   - CARD_Long_read_report_parser (sequencing report parsing and visualization)   
+   - SIRVsuite (SIRV RNA Spike-in Control QC)  
 
 Instructions for installing each tool are provided in their respective documentation:  
 
@@ -35,14 +35,14 @@ Additional tools:
 
 **Pipeline Steps**
 1. **Base Calling**   
-We perform base calling on ONT `.pod5` files using Dorado v9 to generate `.bam` files.  
+We perform basecalling on ONT `.pod5` files using Dorado v9 to generate `.bam` files.  
 Example Command:  
 `sbatch --array=1-4 pipeline/01_basecalling/dorado_v090_basecalling_array_RNA.sh`  
 2. **Read Trimming**  
-Identify, orient, and trim full-length Nanopore cDNA reads using Pychopper. `.bam` files are converted to `.fastq` at the start of the run. 
+Identify, orient, and trim full-length Nanopore cDNA reads using Pychopper. Unaligned `.bam` files are converted to `.fastq` at the start of the run. 
 Example Command:  
 `sbatch --array=1-4 pipeline/02_trimming/pychopper.sh`  
-3. **Mapping**  
+3. **Alignment**  
 Map SIRV RNA spike-in control reads to the SIRV genome (SIRVome) and extracting full-length brain sample reads to map to the reference genome GRCh38 using Minimap2. The input is the `.fastq` file from Pychopper output and the outputs are mapped `.bam` files.   
 Example Command:  
 `sbatch --array=1-4 pipeline/03_alignment/minimap_brain_sirv.sh`  
