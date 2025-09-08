@@ -42,6 +42,9 @@ mkdir -p "${OUTDIR}"
 stringtie \
     ${INFILE} \
     -L \
+    -t \
+    -c 2.5 \
+    -f 0.05 \
     -p $SLURM_CPUS_PER_TASK \
     -G ${REF_GTF} \
     -o ${OUTFILE}
