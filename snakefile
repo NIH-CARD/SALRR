@@ -197,6 +197,6 @@ rule merge:
             --ref_gtf {params.human_ref_gtf} \
             --prefix {params.prefix} \
             --outfile {output.annotated_gtf} \
-            --script_dir {params.script_dir} \
+            --tama_script_dir {params.tama_scripts} \
         """
 
