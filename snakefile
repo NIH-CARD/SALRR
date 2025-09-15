@@ -68,25 +68,25 @@ rule all:
 #             --model {params.model} \
 #         """
 
-rule trimming:
-    input:  
-        ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
-    output:  
-        fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
-    params:
-        outdir = config.base_dir + config.pychopper_dir
-    threads: 20
-    resources:
-        runtime=4320, mem_mb=120000, disk_mb=50000
-    singularity:
-        "./lrrna_latest.sif"
-    shell: 
-        """
-        scripts/trimming.sh \
-            --infile {input.ubam} \
-            --outfile {output.fastq}  \
-            --outdir {params.outdir}
-        """
+# rule trimming:
+#     input:  
+#         ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+#     output:  
+#         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
+#     params:
+#         outdir = config.base_dir + config.pychopper_dir
+#     threads: 20
+#     resources:
+#         runtime=4320, mem_mb=120000, disk_mb=50000
+#     singularity:
+#         "./lrrna_latest.sif"
+#     shell: 
+#         """
+#         scripts/trimming.sh \
+#             --infile {input.ubam} \
+#             --outfile {output.fastq}  \
+#             --outdir {params.outdir}
+#         """
 
 rule alignment:
     input:  

@@ -45,7 +45,7 @@ stringtie \
     -t \
     -c 2.5 \
     -f 0.05 \
-    -p $SLURM_CPUS_PER_TASK \
+    -p 20 \
     -G ${REF_GTF} \
     -o ${OUTFILE}
 

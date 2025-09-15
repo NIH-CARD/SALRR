@@ -40,9 +40,9 @@ mkdir -p "${OUTDIR}"
 
 # Stringtie Assembly
 stringtie \
-    ${INFILE%_brain_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam \
+    ${INFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam \
     -L \
-    -p $SLURM_CPUS_PER_TASK \
+    -p 20 \
     -G ${REF_GTF} \
     -o ${OUTFILE}
 

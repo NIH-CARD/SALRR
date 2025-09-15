@@ -108,7 +108,7 @@ gffcompare \
 
 # Quantifying the annoted gtf from gffcompare with IsoQuant
 isoquant.py \
-    -t 60 \
+    -t 20 \
     --reference ${GENOME} \
     --transcript_quantification all \
     --gene_quantification all \

@@ -44,7 +44,7 @@ mkdir -p "${OUTDIR}"
 # Run Isoquant Assembly
 
 isoquant.py \
-    -t 60 \
+    -t 20 \
     --reference ${SIRVOME} \
     --genedb ${GENEDB} \
     --bam "${INFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" \

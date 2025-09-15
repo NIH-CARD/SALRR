@@ -48,14 +48,14 @@ mkdir -p "${OUTDIR}"
 
 # map reads to SIRVome
 minimap2 \
-    -t $SLURM_CPUS_PER_TASK \
+    -t 20 \
     -ax splice \
     --splice-flank=no \
     "${SIRV_REF}" \
     "${INFILE}" - \
     | samtools view -b - \
     | samtools sort \
-    -@ $SLURM_CPUS_PER_TASK - \
+    -@ 20 - \
     > "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam"
 
 # index the bam, exit if it fails
@@ -67,7 +67,7 @@ samtools view \
     -F 2304 \
     -b \
     "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
-    -@ $SLURM_CPUS_PER_TASK - \
+    -@ 20 - \
     > "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam"
 
 # index the mapped filtered sirv bams, exit if it fails
@@ -78,7 +78,7 @@ samtools view \
     -f 4 \
     -b \
     "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
-    -@ $SLURM_CPUS_PER_TASK - \
+    -@ 20 - \
     > "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" || exit 1
 
 # index the bam, exit if it fails
@@ -87,14 +87,14 @@ samtools index "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" |
 # convert unmapped human reads to fastq, exit if it fails
 samtools fastq \
     -T* \
-    -@ $SLURM_CPUS_PER_TASK \
+    -@ 20 \
     -n \
     "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" \
     > "${INFILE%.trimmed.fastq}_human_unmapped.fastq" || exit 1
 
 # map the human reads to the genome
 minimap2 \
-    -t $SLURM_CPUS_PER_TASK \
+    -t 20 \
     -ax splice \
     -k 14 \
     -uf \
@@ -105,7 +105,7 @@ minimap2 \
     -F 2304 \
     -b - \
     | samtools sort \
-    -@ $SLURM_CPUS_PER_TASK - \
+    -@ 20 - \
     > "${OUTFILE}" || exit 1
 
 # index the human mapped bam, exit if it fails

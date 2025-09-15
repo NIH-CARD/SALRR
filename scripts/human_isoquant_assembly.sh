@@ -44,7 +44,7 @@ mkdir -p "${OUTDIR}"
 # Run Isoquant Assembly
 
 isoquant.py \
-    -t 60 \
+    -t 20 \
     --reference ${GENOME} \
     --genedb ${GENEDB} \
     --complete_genedb \
