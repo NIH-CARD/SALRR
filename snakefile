@@ -47,26 +47,26 @@ rule all:
             flowcell_id = samples.iloc[:,1].tolist()
         )
 
-rule basecall:
-    input:
-        pod5 = config.base_dir + '{sample_id}/{sample_id}/{flowcell_id}/pod5'
-    output:
-        ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
-    resources:
-        runtime=4320, mem_mb=150000, gpu=4, gpu_model='a100', disk_mb=50000
-    threads: 30
-    params:
-        model = config.dorado_model,
-        outdir = config.base_dir + config.ont_ubam + '/{sample_id}/'
-    shell:
-        """
+# rule basecall:
+#     input:
+#         pod5 = config.base_dir + '{sample_id}/{sample_id}/{flowcell_id}/pod5'
+#     output:
+#         ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+#     resources:
+#         runtime=4320, mem_mb=150000, gpu=1, gpu_model='a100', disk_mb=50000
+#     threads: 30
+#     params:
+#         model = config.dorado_model,
+#         outdir = config.base_dir + config.ont_ubam + '/{sample_id}/'
+#     shell:
+#         """
         
-        scripts/basecalling.sh \
-            --infile {input.pod5} \
-            --outfile {output.ubam} \
-            --outdir {params.outdir} \
-            --model {params.model} \
-        """
+#         scripts/basecalling.sh \
+#             --infile {input.pod5} \
+#             --outfile {output.ubam} \
+#             --outdir {params.outdir} \
+#             --model {params.model} \
+#         """
 
 rule trimming:
     input:  
@@ -75,9 +75,11 @@ rule trimming:
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
     params:
         outdir = config.base_dir + config.pychopper_dir
-    threads: 120
+    threads: 20
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
+    singularity:
+        "./lrrna_latest.sif"
     shell: 
         """
         scripts/trimming.sh \
@@ -91,13 +93,15 @@ rule alignment:
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq'
     output:  
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
-    threads: 120
+    threads: 20
     resources:
         runtime=4320, mem_mb=200000, disk_mb=100000
     params:
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
         human_fasta = config.genome,
         sirv_fasta = config.sirvome
+    singularity:
+        "./lrrna_latest.sif"
     shell: 
         """
         scripts/alignment.sh \
@@ -114,7 +118,7 @@ rule stringtie:
     output:
         sirv_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf',
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf'
-    threads: 60
+    threads: 20
     params:
         human_ref_gtf = config.human_genedb,
         sirv_ref_gtf = config.sirv_genedb,
@@ -122,6 +126,8 @@ rule stringtie:
         human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/'
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
+    singularity:
+        "./lrrna_latest.sif"
     shell: 
         """
         scripts/sirv_stringtie_assembly.sh \
@@ -142,7 +148,7 @@ rule isoquant:
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     output:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
-    threads: 60
+    threads: 20
     params:
         prefix = '{sample_id}_{flowcell_id}',
         sirv_prefix = '{sample_id}_{flowcell_id}_sirv',
@@ -154,6 +160,8 @@ rule isoquant:
         human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/'
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
+    singularity:
+        "./lrrna_latest.sif"
     shell: 
         """
         scripts/sirv_isoquant_assembly.sh \
@@ -175,7 +183,7 @@ rule merge:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf',
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
-    threads: 120
+    threads: 20
     params:
         prefix = '{sample_id}_{flowcell_id}',
         human_fasta = config.genome,
@@ -186,7 +194,8 @@ rule merge:
         runtime=4320, mem_mb=400000, disk_mb=100000
     output:
         annotated_gtf = config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
-
+    singularity:
+        "./lrrna_latest.sif"
     shell: 
         """
         scripts/transcript_merge.sh \

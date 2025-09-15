@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 
 
@@ -36,8 +37,8 @@ fi
 # Rest of code
 
 # loading modules
-module load samtools/1.21
-module load pychopper/2.7.10
+# module load samtools/1.21
+# module load pychopper/2.7.10
 
 
 #making the output directory if it does not exist
@@ -55,7 +56,7 @@ samtools fastq \
 # Running pychopper for trimming
 
 pychopper \
-  -t $SLURM_CPUS_PER_TASK \
+  -t 20 \
   -m phmm \
   -k PCS114 \
   -r "${OUTFILE%.trimmed.fastq}.pdf" \

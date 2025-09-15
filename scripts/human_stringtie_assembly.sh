@@ -33,7 +33,7 @@ fi
 # Rest of code
 
 # loading modules
-module load stringtie/2.2.3
+# module load stringtie/2.2.3
 
 # create the output directory if it does not exist
 mkdir -p "${OUTDIR}"
