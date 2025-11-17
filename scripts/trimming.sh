@@ -48,7 +48,7 @@ mkdir -p "${OUTDIR}"
 # Converting BAM to FASTQ using samtools
 samtools fastq \
   -T* \
-  -@ $SLURM_CPUS_PER_TASK \
+  -@ 20 \
   -n \
   "${INFILE}" \
   > "${OUTFILE%.trimmed.fastq}.fastq" || exit 1

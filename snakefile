@@ -68,25 +68,25 @@ rule all:
 #             --model {params.model} \
 #         """
 
-# rule trimming:
-#     input:  
-#         ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
-#     output:  
-#         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
-#     params:
-#         outdir = config.base_dir + config.pychopper_dir
-#     threads: 20
-#     resources:
-#         runtime=4320, mem_mb=120000, disk_mb=50000
-#     singularity:
-#         "./lrrna_latest.sif"
-#     shell: 
-#         """
-#         scripts/trimming.sh \
-#             --infile {input.ubam} \
-#             --outfile {output.fastq}  \
-#             --outdir {params.outdir}
-#         """
+rule trimming:
+    input:  
+        ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+    output:  
+        fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
+    params:
+        outdir = config.base_dir + config.pychopper_dir
+    threads: 20
+    resources:
+        runtime=4320, mem_mb=120000, disk_mb=50000
+    singularity:
+        "./lrrna_0.9.sif"
+    shell: 
+        """
+        scripts/trimming.sh \
+            --infile {input.ubam} \
+            --outfile {output.fastq}  \
+            --outdir {params.outdir}
+        """
 
 rule alignment:
     input:  
@@ -101,7 +101,7 @@ rule alignment:
         human_fasta = config.genome,
         sirv_fasta = config.sirvome
     singularity:
-        "./lrrna_latest.sif"
+        "./lrrna_0.9.sif"
     shell: 
         """
         scripts/alignment.sh \
@@ -127,7 +127,7 @@ rule stringtie:
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
     singularity:
-        "./lrrna_latest.sif"
+        "./lrrna_0.9.sif"
     shell: 
         """
         scripts/sirv_stringtie_assembly.sh \
@@ -161,7 +161,7 @@ rule isoquant:
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
     singularity:
-        "./lrrna_latest.sif"
+        "./lrrna_0.9.sif"
     shell: 
         """
         scripts/sirv_isoquant_assembly.sh \
@@ -195,7 +195,7 @@ rule merge:
     output:
         annotated_gtf = config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
     singularity:
-        "./lrrna_latest.sif"
+        "./lrrna_0.9.sif"
     shell: 
         """
         scripts/transcript_merge.sh \
