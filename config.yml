@@ -8,6 +8,7 @@ assembly_dir: 'snakemake_test/ASSEMBLY/'
 isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
 stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
 merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
+# Path to the container image
 
 # these directories should be kept unchanged
 genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
