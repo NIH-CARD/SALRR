@@ -19,6 +19,7 @@ if [ "$#" != 0 ]; then
             --tama_script_dir) assert_argument "$1" "$opt"; TAMA_BASE_DIR="$1"; shift;;
             --ref_gtf) assert_argument "$1" "$opt"; REF_GTF="$1"; shift;;
             --prefix) assert_argument "$1" "$opt"; PREFIX="$1"; shift;;
+            --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -108,7 +109,7 @@ gffcompare \
 
 # Quantifying the annoted gtf from gffcompare with IsoQuant
 isoquant.py \
-    -t 20 \
+    -t "${THREADS}" \
     --reference ${GENOME} \
     --transcript_quantification all \
     --gene_quantification all \

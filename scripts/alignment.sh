@@ -19,6 +19,7 @@ if [ "$#" != 0 ]; then
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
             --genome) assert_argument "$1" "$opt"; GENOME="$1"; shift;;
             --sirvome) assert_argument "$1" "$opt"; SIRV_REF="$1"; shift;;
+            --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
 
       
             # Arguments processing. You may remove any unneeded line after the 1st.
@@ -48,14 +49,14 @@ mkdir -p "${OUTDIR}"
 
 # map reads to SIRVome
 minimap2 \
-    -t 20 \
+    -t "${THREADS}" \
     -ax splice \
     --splice-flank=no \
     "${SIRV_REF}" \
     "${INFILE}" - \
     | samtools view -b - \
     | samtools sort \
-    -@ 20 - \
+    -@ "${THREADS}" - \
     > "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam"
 
 # index the bam, exit if it fails
@@ -67,7 +68,7 @@ samtools view \
     -F 2304 \
     -b \
     "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
-    -@ 20 - \
+    -@ "${THREADS}" - \
     > "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam"
 
 # index the mapped filtered sirv bams, exit if it fails
@@ -78,7 +79,7 @@ samtools view \
     -f 4 \
     -b \
     "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
-    -@ 20 - \
+    -@ "${THREADS}" - \
     > "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" || exit 1
 
 # index the bam, exit if it fails
@@ -87,14 +88,14 @@ samtools index "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" |
 # convert unmapped human reads to fastq, exit if it fails
 samtools fastq \
     -T* \
-    -@ 20 \
+    -@ "${THREADS}" \
     -n \
     "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" \
     > "${INFILE%.trimmed.fastq}_human_unmapped.fastq" || exit 1
 
 # map the human reads to the genome
 minimap2 \
-    -t 20 \
+    -t "${THREADS}" \
     -ax splice \
     -k 14 \
     -uf \
@@ -105,7 +106,7 @@ minimap2 \
     -F 2304 \
     -b - \
     | samtools sort \
-    -@ 20 - \
+    -@ "${THREADS}" - \
     > "${OUTFILE}" || exit 1
 
 # index the human mapped bam, exit if it fails

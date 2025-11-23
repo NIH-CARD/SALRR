@@ -1,0 +1,37 @@
+# Generic HPC SLURM cluster configuration
+# This file provides overrides for users running on standard HPC clusters with SLURM
+#
+# INSTRUCTIONS for HPC users:
+# 1. Update the reference paths below with your system's paths
+# 2. Adjust base_dir if you want outputs in a different location
+# 3. Keep all relative output directory paths unchanged (they're portable)
+#
+# If your HPC cluster has shared reference data, update the paths below.
+# Otherwise, inherit from default.yaml and fill in your own paths.
+
+
+#skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
+#skip_basecall: true
+
+# Optional: Change base directory for HPC outputs
+# Leave as './' if running from snakemake_pipeline/ directory
+# Or set to an absolute path like '/home/username/lrrna_outputs/'
+# base_dir: './'
+
+# Reference genome paths for your HPC system
+# Replace these with paths available on your cluster
+# Ask your HPC admin for the location of:
+# - GRCh38 reference genome (FASTA)
+# - GENCODE annotations (GTF)
+# - SIRV spike-in references (if available on your cluster)
+#
+# Example paths for common HPC systems:
+#   /shared/genomes/GRCh38.fa
+#   /cluster/references/gencode.v43.gtf
+#   /shared/spike_ins/SIRV/
+#
+# genome: '/path/to/your/GRCh38.fa'
+# human_genedb: '/path/to/your/gencode.v43.annotation.gtf'
+# sirvome: '/path/to/your/SIRV_multi-fasta.fasta'
+# sirv_genedb: '/path/to/your/SIRV_genedb.gtf'
+# sirv_ref_gtf: '/path/to/your/SIRV_ref.gtf'

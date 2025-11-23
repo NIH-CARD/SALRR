@@ -1,0 +1,37 @@
+# Default configuration for ONT RNA pipeline
+# Works for local, Biowulf, and generic HPC environments
+
+#skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
+skip_basecall: true
+# Base directory - edit this if you need a different path
+base_dir: './'
+
+# Output directories (relative to base_dir)
+ont_ubam: 'snakemake/ONT_UBAM'
+pychopper_dir: 'snakemake/PYCHOPPER'
+mapping_dir: 'snakemake/MAPPED'
+assembly_dir: 'snakemake/ASSEMBLY/'
+isoquant_dir: 'snakemake/ASSEMBLY/ISOQUANT'
+stringtie_dir: 'snakemake/ASSEMBLY/STRINGTIE'
+merge_dir: 'snakemake/ASSEMBLY/MERGED'
+
+# Dorado model for basecalling (if enabled)
+dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
+
+# Reference genomes and annotations
+# IMPORTANT: These should point to absolute paths on your system
+# Update these paths to match your local setup
+genome: '/path/to/reference/genome.fa'
+sirvome: '/path/to/reference/sirvome.fasta'
+human_genedb: '/path/to/reference/gencode.annotation.gtf'
+sirv_genedb: '/path/to/reference/sirv.corrected.gtf'
+sirv_ref_gtf: '/path/to/reference/sirv_ref.gtf'
+
+# Script directory
+script_dir: 'scripts/'
+
+# Sample sheet
+sample_file: 'input_example.txt'
+
+# Container configuration
+container_image: 'lrrna_0.9.sif'

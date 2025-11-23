@@ -18,6 +18,7 @@ if [ "$#" != 0 ]; then
             --infile) assert_argument "$1" "$opt"; INFILE="$1"; shift;;
             --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
+            --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -48,7 +49,7 @@ mkdir -p "${OUTDIR}"
 # Converting BAM to FASTQ using samtools
 samtools fastq \
   -T* \
-  -@ 20 \
+  -@ "${THREADS}" \
   -n \
   "${INFILE}" \
   > "${OUTFILE%.trimmed.fastq}.fastq" || exit 1
@@ -56,7 +57,7 @@ samtools fastq \
 # Running pychopper for trimming
 
 pychopper \
-  -t 20 \
+  -t "${THREADS}" \
   -m phmm \
   -k PCS114 \
   -r "${OUTFILE%.trimmed.fastq}.pdf" \

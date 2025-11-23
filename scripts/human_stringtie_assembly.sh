@@ -14,6 +14,7 @@ if [ "$#" != 0 ]; then
             --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
             --ref_gtf) assert_argument "$1" "$opt"; REF_GTF="$1"; shift;;
+            --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -45,7 +46,7 @@ stringtie \
     -t \
     -c 2.5 \
     -f 0.05 \
-    -p 20 \
+    -p "${THREADS}" \
     -G ${REF_GTF} \
     -o ${OUTFILE}
 

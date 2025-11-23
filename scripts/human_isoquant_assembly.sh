@@ -15,6 +15,7 @@ if [ "$#" != 0 ]; then
             --genome) assert_argument "$1" "$opt"; GENOME="$1"; shift;;
             --genedb) assert_argument "$1" "$opt"; GENEDB="$1"; shift;;
             --prefix) assert_argument "$1" "$opt"; PREFIX="$1"; shift;;
+            --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -44,7 +45,7 @@ mkdir -p "${OUTDIR}"
 # Run Isoquant Assembly
 
 isoquant.py \
-    -t 20 \
+    -t "${THREADS}" \
     --reference ${GENOME} \
     --genedb ${GENEDB} \
     --complete_genedb \

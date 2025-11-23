@@ -1,35 +1,92 @@
 #!/usr/bin/env bash
-#SBATCH --time 10-0:00:00
 
+################################################################################
+# Snakemake Pipeline Launcher
+# automatically detects environment (Biowulf vs. Generic HPC vs. Local)
+# Usage: ./snakemake.sh [biowulf|slurm|default]
+################################################################################
 
-module purge
-module load apptainer
-module load singularity/4.2.2
-module load snakemake/7.32.4 
+# 1. Auto-Detect Logic
+# If user provided an argument (e.g., "biowulf"), use it. Otherwise use "auto".
+PROFILE="${1:-auto}"
 
-# Clone the biowulf snakemake profile
-if [[ ! -d snakemake_profile ]]; then
-    git clone https://github.com/NIH-HPC/snakemake_profile.git
+if [[ "$PROFILE" == "auto" ]]; then
+    # Check specifically for Biowulf
+    if [[ -n "$SLURM_CLUSTER_NAME" ]] && [[ "$SLURM_CLUSTER_NAME" == "biowulf" ]]; then
+        PROFILE="biowulf"
+        echo "Detected Biowulf environment - using 'biowulf' profile"
+    
+    # Check for generic SLURM (checking if 'sinfo' command exists)
+    elif command -v sinfo &> /dev/null; then
+        PROFILE="slurm"
+        echo "Detected SLURM cluster - using 'slurm' profile"
+    
+    # Fallback to local execution
+    else
+        PROFILE="default"
+        echo "No cluster detected - using 'default' local profile"
+    fi
 fi
 
-# Pull the containers (will need to uncomment this later)
-#apptainer pull --disable-cache lrrna_latest.sif oras://quay.io/wellerca/lrrna
-#apptainer pull lrrna_0.9.sif oras://quay.io/datatecnica/lrrna:0.9
-singularity pull oras://quay.io/datatecnica/lrrna:0.9
+################################################################################
+# 2. Environment Loading
+################################################################################
 
+case "$PROFILE" in
+    biowulf)
+        # Load required modules for Biowulf
+        module purge
+        module load apptainer singularity/4.2.2 snakemake/7.32.4
+        
+        # Load Biowulf-specific singularity bindings if they exist
+        if [ -f /usr/local/current/singularity/app_conf/sing_binds ]; then
+             . /usr/local/current/singularity/app_conf/sing_binds
+        fi
+        ;;
+        
+    slurm)
+        # For generic HPC, assume Conda, but try loading module if missing
+        if ! command -v snakemake &> /dev/null; then
+            echo "Please activate the environment: conda activate lrrna"
+            exit 1
+        fi 
+        if ! command -v singularity &> /dev/null && ! command -v apptainer &> /dev/null; then
+        echo "Error: singularity/apptainer not found. Please load module: module load singularity"
+        exit 1
+        fi
+        ;;
+        
+    default)
+        # For local execution, strictly require user to have environment active
+        if ! command -v snakemake &> /dev/null; then
+            echo "Error: snakemake not found. Please run: conda activate lrrna"
+            exit 1
+        fi
+        ;;
+esac
 
-# Bind external directories on Biowulf
-. /usr/local/current/singularity/app_conf/sing_binds
+# Ensure container exists (Standard across all profiles)
+if [[ ! -f "lrrna_0.9.sif" ]]; then
+    echo "Container image not found. Downloading..."
+    singularity pull oras://quay.io/datatecnica/lrrna:0.9
+fi
 
-#updating permissions on bash scripts
-chmod 777 scripts/trimming.sh
-chmod 777 scripts/alignment.sh
-chmod 777 scripts/human_isoquant_assembly.sh
-chmod 777 scripts/sirv_isoquant_assembly.sh
-chmod 777 scripts/human_stringtie_assembly.sh
-chmod 777 scripts/sirv_stringtie_assembly.sh
-chmod 777 scripts/transcript_merge.sh
+################################################################################
+# 3. Permissions & Execution
+################################################################################
 
-# Run snakemake
-# snakemake --profile snakemake_profile --use-singularity $@ -n
-snakemake --profile snakemake_profile --use-singularity
+# Make scripts executable (using +x is safer than 777)
+chmod +x scripts/*.sh
+
+echo "Starting Snakemake pipeline with profile: $PROFILE"
+
+# Run Snakemake
+# We load default config AND resources config
+snakemake \
+    --profile ./snakemake_profiles/$PROFILE \
+    --configfile config/default.yaml \
+    --config environment=$PROFILE \
+    "$@"
+
+# Exit with the same code as Snakemake (0 = success, 1 = error)
+exit $?

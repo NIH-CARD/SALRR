@@ -1,0 +1,19 @@
+# Biowulf-specific configuration overrides
+# This file overrides values in default.yaml for Biowulf cluster users
+# 
+# Only include paths and settings that differ from default.yaml
+# Everything else inherits from default.yaml
+
+#skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
+skip_basecall: false
+
+# Biowulf-specific base directory
+# Change this to your NABEC_RNA directory path if different
+base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
+
+# Biowulf reference genomes (absolute paths on /data/CARDPB/)
+genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
+human_genedb: '/data/CARDPB/resources/hg38/gencode.v43.annotation.gtf'
+sirvome: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta'
+sirv_genedb: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.corrected.gtf'
+sirv_ref_gtf: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV_Set4_Norm_Sequences_20210507/SIRV_ERCC_longSIRV_multi-fasta_20210507.gtf'

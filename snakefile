@@ -24,6 +24,9 @@ class DotDict(dict):
 configfile: 'config.yml'
 config = DotDict(config)
 
+# Read skip_basecall setting (default: True for local/HPC, can be overriden to False for Biowulf)
+SKIP_BASECALL = config.get('skip_basecall', True)
+
 samples = pd.read_csv(config.sample_file, header=None, sep=None, engine='python')
 #samples = pd.read_csv('basecalling_sample_sheet_jan_19.txt', header=None, sep=None, engine='python')
 
@@ -46,31 +49,35 @@ rule all:
             sample_id   = samples.iloc[:,0].tolist(),
             flowcell_id = samples.iloc[:,1].tolist()
         )
-
-# rule basecall:
-#     input:
-#         pod5 = config.base_dir + '{sample_id}/{sample_id}/{flowcell_id}/pod5'
-#     output:
-#         ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
-#     resources:
-#         runtime=4320, mem_mb=150000, gpu=1, gpu_model='a100', disk_mb=50000
-#     threads: 30
-#     params:
-#         model = config.dorado_model,
-#         outdir = config.base_dir + config.ont_ubam + '/{sample_id}/'
-#     shell:
-#         """
-        
-#         scripts/basecalling.sh \
-#             --infile {input.pod5} \
-#             --outfile {output.ubam} \
-#             --outdir {params.outdir} \
-#             --model {params.model} \
-#         """
+    # Basecalling rule - only runs on Biowulf (skip_basecall: false)
+if not SKIP_BASECALL:
+    rule basecall:
+        input:
+            pod5 = config.base_dir + '{sample_id}/{sample_id}/{flowcell_id}/pod5'
+        output:
+            ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+        resources:
+            runtime=4320, mem_mb=150000, gpu=1, gpu_model='a100', disk_mb=50000
+        threads: 30
+        params:
+            model = config.dorado_model,
+            outdir = config.base_dir + config.ont_ubam + '/{sample_id}/'
+        shell:
+            """
+            scripts/basecalling.sh \
+                --infile {input.pod5} \
+                --outfile {output.ubam} \
+                --outdir {params.outdir} \
+                --model {params.model} \
+            """
 
 rule trimming:
     input:  
-        ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+        ubam = (
+            rules.basecall.output.ubam
+            if not SKIP_BASECALL
+            else config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+        )
     output:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
     params:
@@ -85,7 +92,8 @@ rule trimming:
         scripts/trimming.sh \
             --infile {input.ubam} \
             --outfile {output.fastq}  \
-            --outdir {params.outdir}
+            --outdir {params.outdir} \
+            --threads {threads}
         """
 
 rule alignment:
@@ -109,7 +117,8 @@ rule alignment:
             --outfile {output.mapped_bam} \
             --outdir {params.mapped_dir} \
             --genome {params.human_fasta} \
-            --sirvome {params.sirv_fasta}
+            --sirvome {params.sirv_fasta} \
+            --threads {threads}
         """
 
 rule stringtie:
@@ -134,12 +143,14 @@ rule stringtie:
             --infile {input.mapped_bam} \
             --outfile {output.sirv_stringtie_gtf} \
             --outdir {params.sirv_stringtie_dir} \
-            --ref_gtf {params.sirv_ref_gtf}
+            --ref_gtf {params.sirv_ref_gtf} \
+            --threads {threads}
         scripts/human_stringtie_assembly.sh \
             --infile {input.mapped_bam} \
             --outdir {params.human_stringtie_dir} \
             --outfile {output.human_stringtie_gtf} \
-            --ref_gtf {params.human_ref_gtf} 
+            --ref_gtf {params.human_ref_gtf} \
+            --threads {threads}
         """
 
 
@@ -169,13 +180,15 @@ rule isoquant:
             --outdir {params.sirv_isoquant_dir} \
             --sirvome {params.sirv_fasta} \
             --genedb {params.sirv_ref_gtf} \
-            --prefix {params.sirv_prefix}
+            --prefix {params.sirv_prefix} \
+            --threads {threads}
         scripts/human_isoquant_assembly.sh \
             --infile {input.mapped_bam} \
             --outdir {params.human_isoquant_dir} \
             --genome {params.human_fasta} \
             --genedb {params.human_ref_gtf} \
-            --prefix {params.prefix} 
+            --prefix {params.prefix} \
+            --threads {threads}
         """
 
 rule merge:
@@ -208,5 +221,6 @@ rule merge:
             --prefix {params.prefix} \
             --outfile {output.annotated_gtf} \
             --tama_script_dir {params.tama_scripts} \
+            --threads {threads}
         """
 
