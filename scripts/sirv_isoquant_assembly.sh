@@ -34,10 +34,6 @@ fi
 
 # Rest of code
 
-# loading modules
-
-# module load isoquant/3.6.2
-
 # making the output directory if it does not exist already
 
 mkdir -p "${OUTDIR}"

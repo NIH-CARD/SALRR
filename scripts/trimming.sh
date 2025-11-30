@@ -37,11 +37,6 @@ fi
 
 # Rest of code
 
-# loading modules
-# module load samtools/1.21
-# module load pychopper/2.7.10
-
-
 #making the output directory if it does not exist
 
 mkdir -p "${OUTDIR}"

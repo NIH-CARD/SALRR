@@ -2,30 +2,24 @@
 
 ################################################################################
 # Snakemake Pipeline Launcher
-# automatically detects environment (Biowulf vs. Generic HPC vs. Local)
+# Explicity select the profile matching your system (Biowulf, Other HPCs or Local)
 # Usage: ./snakemake.sh [biowulf|slurm|default]
 ################################################################################
 
-# 1. Auto-Detect Logic
-# If user provided an argument (e.g., "biowulf"), use it. Otherwise use "auto".
-PROFILE="${1:-auto}"
-
-if [[ "$PROFILE" == "auto" ]]; then
-    # Check specifically for Biowulf
-    if [[ -n "$SLURM_CLUSTER_NAME" ]] && [[ "$SLURM_CLUSTER_NAME" == "biowulf" ]]; then
-        PROFILE="biowulf"
-        echo "Detected Biowulf environment - using 'biowulf' profile"
-    
-    # Check for generic SLURM (checking if 'sinfo' command exists)
-    elif command -v sinfo &> /dev/null; then
-        PROFILE="slurm"
-        echo "Detected SLURM cluster - using 'slurm' profile"
-    
-    # Fallback to local execution
-    else
-        PROFILE="default"
-        echo "No cluster detected - using 'default' local profile"
-    fi
+# 1. Profile Selection
+# User must explicitly provide the profile argument.
+if [[ "$1" == "biowulf" || "$1" == "slurm" || "$1" == "default" ]]; then
+    PROFILE="$1"
+    shift  # Remove first argument so that "$@" contains only snakemake args
+else
+    echo "Error: You must specify an execution profile."
+    echo "Usage: ./snakemake.sh <biowulf|slurm|default> [snakemake options]"
+    echo ""
+    echo "Available profiles:"
+    echo "  biowulf : For NIH Biowulf cluster (loads modules automatically)"
+    echo "  slurm   : For generic SLURM clusters"
+    echo "  default : For local execution"
+    exit 1
 fi
 
 ################################################################################
@@ -36,7 +30,7 @@ case "$PROFILE" in
     biowulf)
         # Load required modules for Biowulf
         module purge
-        module load apptainer singularity/4.2.2 snakemake/7.32.4
+        module load singularity/4.2.2 snakemake/7.32.4
         
         # Load Biowulf-specific singularity bindings if they exist
         if [ -f /usr/local/current/singularity/app_conf/sing_binds ]; then
@@ -81,11 +75,11 @@ chmod +x scripts/*.sh
 echo "Starting Snakemake pipeline with profile: $PROFILE"
 
 # Run Snakemake
-# We load default config AND resources config
+# We load default config
+
 snakemake \
     --profile ./snakemake_profiles/$PROFILE \
-    --configfile config/default.yaml \
-    --config environment=$PROFILE \
+    --config profile=$PROFILE \
     "$@"
 
 # Exit with the same code as Snakemake (0 = success, 1 = error)

@@ -17,3 +17,4 @@ jobs: 50                    # Allow up to 50 simultaneous jobs
 keep-going: True            # Keep going even if one job fails
 rerun-incomplete: True      # Rerun incomplete jobs
 singularity-args: " --cleanenv"
+use-singularity: True

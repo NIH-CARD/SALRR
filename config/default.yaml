@@ -4,7 +4,7 @@
 #skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
 skip_basecall: true
 # Base directory - edit this if you need a different path
-base_dir: './'
+base_dir: '../'
 
 # Output directories (relative to base_dir)
 ont_ubam: 'snakemake/ONT_UBAM'

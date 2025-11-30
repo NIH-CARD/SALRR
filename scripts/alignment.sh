@@ -39,10 +39,6 @@ fi
 
 # Rest of code
 
-# loading modules
-# module load minimap2/2.29
-# module load samtools/1.21
-
 # making the output directory if it does not exist
 
 mkdir -p "${OUTDIR}"

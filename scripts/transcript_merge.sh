@@ -38,11 +38,6 @@ fi
 
 # Rest of code
 
-# loading the modules
-# module load python/3.12
-# module load isoquant/3.6.2
-# module load gffcompare/0.12.6
-
 #make the output directory if it does not exist
 
 mkdir -p ${MERGE_DIR}

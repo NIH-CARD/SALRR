@@ -20,8 +20,9 @@ class DotDict(dict):
         except KeyError:
             raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{item}'")
 
-
-configfile: 'config.yml'
+#loading environment-specific config based PROFILE environment variable
+environment = config.get('profile', 'default')
+configfile: f'config/{environment}.yaml'
 config = DotDict(config)
 
 # Read skip_basecall setting (default: True for local/HPC, can be overriden to False for Biowulf)
@@ -49,7 +50,8 @@ rule all:
             sample_id   = samples.iloc[:,0].tolist(),
             flowcell_id = samples.iloc[:,1].tolist()
         )
-    # Basecalling rule - only runs on Biowulf (skip_basecall: false)
+
+# Basecalling rule only runs on Biowulf (skip_basecall: false)
 if not SKIP_BASECALL:
     rule basecall:
         input:
@@ -70,14 +72,14 @@ if not SKIP_BASECALL:
                 --outdir {params.outdir} \
                 --model {params.model} \
             """
+if not SKIP_BASECALL:
+    TRIMMING_INPUT = rules.basecall.output.ubam
+else:
+    TRIMMING_INPUT = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
 
 rule trimming:
     input:  
-        ubam = (
-            rules.basecall.output.ubam
-            if not SKIP_BASECALL
-            else config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
-        )
+        ubam = TRIMMING_INPUT
     output:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
     params:
