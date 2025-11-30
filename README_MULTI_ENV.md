@@ -418,6 +418,55 @@ To use GRCh39 instead of GRCh38:
 
 ---
 
+## Appendix: Data Structure Example (NABEC Cohort)
+
+This section describes the internal data organization used for the NABEC cohort at NIH-CARD. It serves as an example of how to structure your data for the pipeline.
+
+**Data Structure**    
+Our raw ONT sequencing data are collected and transfered to their respective cohort directories. For example, our NABEC cohort has the following path: `/data/CARD_AUX/LRS_temp/NABEC_RNA` . Within the `NABEC_RNA` directory each sample folder are organized as follow:  
+
+~~~  
+/NABEC_RNA/NABEC_KEN-1069_FTX_RNA   
+ └── NABEC_KEN-1069_FTX_RNA  
+    └── 20250114_2319_2A_PAW72725_5119b730  
+        ├── fastq_fail  
+        ├── fastq_pass  
+        ├── other_reports  
+        └── pod5
+~~~  
+This file hierarchy allows us to easily retrieve the samples list used to run the pipeline scripts and `.json` file paths which we use to get sequencing summary statistics from [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser).  
+  
+**Generating Sample Sheets**  
+Using the directory structure above we generate the samples list and `.json` file paths using the follow command and scripts.  
+
+**1. Generate JSON report paths:**    
+```bash
+find /data/CARD_AUX/LRS_temp/NABEC_RNA/ \
+-type f  \
+-name "*.json" \
+> /data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/json_report_paths.txt  
+```  
+
+**2. Generate Sample Sheet (input_example.txt format):**
+```bash
+while read -r jsonfilepaths; do  
+	SAMPLE_ID=$(basename "$(dirname "$(dirname "$jsonfilepaths")")")  
+	FLOWCELL_ID=$(basename "$(dirname "$jsonfilepaths")")  
+	echo -e "${SAMPLE_ID}\t${FLOWCELL_ID}"   \
+   >>  /data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/sample_sheet.txt
+done < /data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/json_report_paths.txt  
+```  
+
+**Output Example:**
+```  
+NABEC_KEN-1069_FTX_RNA  20250114_2319_2A_PAW72725_5119b730
+NABEC_KEN-1092_FTX_RNA  20250114_2320_2B_PBA15382_a372bdf5
+NABEC_KEN-1127_FTX_RNA  20250114_2320_2C_PAY66952_ea90759d
+...
+```
+
+---
+
 ## File Structure
 
 ```
