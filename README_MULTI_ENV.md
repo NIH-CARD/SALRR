@@ -1,4 +1,5 @@
 # ONT Long-read RNA Sequencing Pipeline (Multi-Environment)
+![Workflow](data_processing_workflow.png)
 
 ## Overview
 
@@ -8,7 +9,7 @@ This is a **refactored, portable Snakemake-based bioinformatics pipeline** for p
 - **Generic HPC (SLURM)** — Pipeline from trimming onward (pre-basecalled inputs)
 - **Local Workstation** — Pipeline from trimming onward (pre-basecalled inputs)
 
-**Key improvement**: A single codebase that auto-detects your environment and configures itself appropriately.
+**Key improvement**: A single codebase that allows you to explicitly select your environment profile.
 
 ---
 
@@ -22,10 +23,7 @@ cd snakemake_pipeline
 # 2. Edit input_example.txt with your sample sheet (tab-separated: sample_id flowcell_id)
 # 3. Optionally customize config/biowulf.yaml if paths differ
 
-# 4. Run (auto-detects Biowulf)
-./snakemake.sh
-
-# Or explicitly specify:
+# 4. Run (Must specify 'biowulf' profile)
 ./snakemake.sh biowulf
 ```
 
@@ -39,10 +37,7 @@ conda activate lrrna
 # 3. Place pre-basecalled BAM files in: snakemake/ONT_UBAM/{sample_id}/
 # 4. Edit input_example.txt with your sample sheet
 
-# 5. Run (auto-detects SLURM)
-./snakemake.sh
-
-# Or explicitly specify:
+# 5. Run (Must specify 'slurm' profile)
 ./snakemake.sh slurm
 ```
 
@@ -56,10 +51,7 @@ conda activate lrrna
 # 3. Place pre-basecalled BAM files in: snakemake/ONT_UBAM/{sample_id}/
 # 4. Edit input_example.txt with your sample sheet
 
-# 5. Run (auto-detects local)
-./snakemake.sh
-
-# Or explicitly specify:
+# 5. Run (Must specify 'default' profile)
 ./snakemake.sh default
 ```
 
@@ -87,27 +79,19 @@ The pipeline uses a **three-level configuration system**:
 
 **How it works**: Snakemake loads `default.yaml`, then layers environment-specific overrides on top.
 
-### Environment Auto-Detection
+### Profile Selection
 
-`snakemake.sh` automatically detects your environment:
+The `snakemake.sh` launcher requires you to explicitly select an execution profile. This ensures the correct modules or environments are loaded for your system.
 
+Usage:
 ```bash
-# Check 1: Is $SLURM_CLUSTER_NAME set to "biowulf"?
-→ Use biowulf profile & modules
-
-# Check 2: Is sinfo command available (generic SLURM)?
-→ Use slurm profile & check for snakemake/singularity
-
-# Check 3: Neither found?
-→ Use default (local) profile & require conda environment
+./snakemake.sh <profile> [snakemake options]
 ```
 
-Override detection manually:
-```bash
-./snakemake.sh biowulf    # Force Biowulf
-./snakemake.sh slurm      # Force generic HPC
-./snakemake.sh default    # Force local
-```
+Available profiles:
+- **`biowulf`**: For NIH Biowulf cluster. Automatically loads `singularity` and `snakemake` modules.
+- **`slurm`**: For generic SLURM clusters. Checks for `singularity` and requires the `lrrna` conda environment.
+- **`default`**: For local execution. Requires the `lrrna` conda environment.
 
 ### The `skip_basecall` Flag
 
@@ -138,7 +122,7 @@ cd CARDlongread_ONT_long_read_RNA/snakemake_pipeline
 
 **Biowulf users** (uses modules):
 ```bash
-# Just run snakemake.sh — it loads modules automatically
+# Just run snakemake.sh with 'biowulf' — it loads modules automatically
 ./snakemake.sh biowulf --dry-run
 ```
 
@@ -204,7 +188,7 @@ snakemake/ONT_UBAM/{sample_id}/{sample_id}_{flowcell_id}.bam
 ### 6. Dry-run (Validate Pipeline)
 
 ```bash
-./snakemake.sh --dry-run
+./snakemake.sh <profile> --dry-run
 ```
 
 This shows what Snakemake will do without running anything. Useful for catching config errors early.
@@ -213,13 +197,12 @@ This shows what Snakemake will do without running anything. Useful for catching 
 
 ```bash
 # Local/HPC: runs in foreground
-./snakemake.sh
+./snakemake.sh default
+# OR
+./snakemake.sh slurm
 
 # Biowulf: submit to cluster
-sbatch snakemake.sh
-
-# Or force a specific profile
-./snakemake.sh biowulf --dry-run
+sbatch snakemake.sh biowulf
 ```
 
 ---
@@ -307,31 +290,31 @@ sample_file: 'input_example.txt'        # Sample sheet path
 
 ```bash
 # On login node
-./snakemake.sh --dry-run
+./snakemake.sh biowulf --dry-run
 
 # When ready, submit to cluster
-sbatch snakemake.sh
+sbatch snakemake.sh biowulf
 ```
 
 ### Local: Dry-run & Debug
 
 ```bash
 # Check what will run
-./snakemake.sh --dry-run
+./snakemake.sh default --dry-run
 
 # Run single rule (for testing)
 snakemake trimming --profile ./snakemake_profiles/default
 
 # View DAG
-./snakemake.sh --dry-run --dag | dot -Tpdf > dag.pdf
+./snakemake.sh default --dry-run --dag | dot -Tpdf > dag.pdf
 ```
 
 ### Generic HPC: SLURM Submission
 
 ```bash
 # Interactive
-srun ./snakemake.sh --dry-run
-srun ./snakemake.sh
+srun ./snakemake.sh slurm --dry-run
+srun ./snakemake.sh slurm
 
 # Batch job
 sbatch -N 1 -t 72:00:00 -J lrrna_pipeline snakemake.sh slurm
@@ -348,7 +331,7 @@ sbatch -N 1 -t 72:00:00 -J lrrna_pipeline snakemake.sh slurm
 **Check**:
 1. Verify `config/biowulf.yaml` has `skip_basecall: false`
 2. Confirm POD5 files exist: `ls {sample_id}/{sample_id}/{flowcell_id}/pod5/`
-3. Run: `./snakemake.sh --dry-run` to see rule DAG
+3. Run: `./snakemake.sh biowulf --dry-run` to see rule DAG
 
 ### Pre-basecalled BAMs Not Found (Local/HPC)
 
@@ -375,7 +358,7 @@ singularity pull oras://quay.io/datatecnica/lrrna:0.9
 **Fix**: The merge rule requires 400GB memory. Check your HPC allocation:
 ```bash
 # Biowulf
-sbatch --mem=400G snakemake.sh
+sbatch --mem=400G snakemake.sh biowulf
 
 # Generic HPC
 sbatch --mem=400G -t 72:00:00 snakemake.sh slurm
@@ -388,7 +371,7 @@ sbatch --mem=400G -t 72:00:00 snakemake.sh slurm
 **Fix**: Activate conda environment:
 ```bash
 conda activate lrrna
-./snakemake.sh
+./snakemake.sh default
 ```
 
 ---
