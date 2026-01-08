@@ -17,7 +17,11 @@ assembly_dir: 'snakemake_test/ASSEMBLY/'
 isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
 stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
 merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
-# Path to the container image
+#SIRV analysis directory (optional)
+#Directory where the SIRV Set4 excel file is located
+data_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
+
+# Path to the container image (optional)
 
 # these directories should be kept unchanged
 genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
@@ -27,4 +31,5 @@ sirv_genedb: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/S
 script_dir: 'scripts/'
 
 # you could change the the source sample file but specify the path and name accordingly
-sample_file: 'input_example.txt'
+# sample_file: 'input_example.txt'
+sample_file: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/basecalling_sample_sheet_jan_19.txt'

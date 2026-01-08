@@ -93,8 +93,6 @@ samtools fastq \
 minimap2 \
     -t "${THREADS}" \
     -ax splice \
-    -k 14 \
-    -uf \
     "${GENOME}" \
     "${INFILE%.trimmed.fastq}_human_unmapped.fastq" - \
     | samtools view \
