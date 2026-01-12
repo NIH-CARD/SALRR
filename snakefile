@@ -28,6 +28,13 @@ config = DotDict(config)
 # Read skip_basecall setting (default: True for local/HPC, can be overriden to False for Biowulf)
 SKIP_BASECALL = config.get('skip_basecall', True)
 
+#Read Enable or Disable SIRV spike-in analysis setting (default: set to True)
+USE_SIRV = config.get('use_sirv', True)
+if USE_SIRV and not config.get('sirvome'):
+    raise ValueError("use_sirv enabled but sirvome path not set in config")
+if USE_SIRV and not config.get('sirv_genedb'):
+    raise ValueError("use_sirv enabled but sirv_genedb path not set in config")
+
 samples = pd.read_csv(config.sample_file, header=None, sep=None, engine='python')
 #samples = pd.read_csv('basecalling_sample_sheet_jan_19.txt', header=None, sep=None, engine='python')
 
@@ -105,11 +112,13 @@ rule alignment:
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     threads: 20
     resources:
-        runtime=4320, mem_mb=200000, disk_mb=100000
+        runtimes=4320, mem_mb=200000, disk_mb=100000
     params:
+        use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
         human_fasta = config.genome,
-        sirv_fasta = config.sirvome
+        sirv_fasta = config.get('sirvome', ''),
+        sirv_flag = lambda wildcards: f"--sirvome {config.get('sirvome', '')}" if USE_SIRV else "--skip-sirv"
     singularity:
         "./lrrna_0.9.sif"
     shell: 
@@ -119,7 +128,7 @@ rule alignment:
             --outfile {output.mapped_bam} \
             --outdir {params.mapped_dir} \
             --genome {params.human_fasta} \
-            --sirvome {params.sirv_fasta} \
+            {params.sirv_flag} \
             --threads {threads}
         """
 
@@ -127,12 +136,13 @@ rule stringtie:
     input:
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     output:
-        sirv_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf',
+        sirv_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf' if USE_SIRV else [],
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf'
     threads: 20
     params:
+        use_sirv = USE_SIRV,
         human_ref_gtf = config.human_genedb,
-        sirv_ref_gtf = config.sirv_genedb,
+        sirv_ref_gtf = config.get('sirv_genedb', ''),
         sirv_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/',
         human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/'
     resources:
@@ -141,12 +151,12 @@ rule stringtie:
         "./lrrna_0.9.sif"
     shell: 
         """
-        scripts/sirv_stringtie_assembly.sh \
+        """ + ("scripts/sirv_stringtie_assembly.sh \
             --infile {input.mapped_bam} \
             --outfile {output.sirv_stringtie_gtf} \
             --outdir {params.sirv_stringtie_dir} \
             --ref_gtf {params.sirv_ref_gtf} \
-            --threads {threads}
+            --threads {threads}\n" if USE_SIRV else "") + """
         scripts/human_stringtie_assembly.sh \
             --infile {input.mapped_bam} \
             --outdir {params.human_stringtie_dir} \
@@ -163,12 +173,13 @@ rule isoquant:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
     threads: 20
     params:
+        use_sirv = USE_SIRV,
         prefix = '{sample_id}_{flowcell_id}',
         sirv_prefix = '{sample_id}_{flowcell_id}_sirv',
         human_fasta = config.genome,
-        sirv_fasta = config.sirvome,
+        sirv_fasta = config.get('sirvome', ''),
         human_ref_gtf = config.human_genedb,
-        sirv_ref_gtf = config.sirv_genedb,
+        sirv_ref_gtf = config.get('sirv_genedb', ''),
         sirv_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/sirv/',
         human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/'
     resources:
@@ -177,13 +188,13 @@ rule isoquant:
         "./lrrna_0.9.sif"
     shell: 
         """
-        scripts/sirv_isoquant_assembly.sh \
+        """ + ("scripts/sirv_isoquant_assembly.sh \
             --infile {input.mapped_bam} \
             --outdir {params.sirv_isoquant_dir} \
             --sirvome {params.sirv_fasta} \
             --genedb {params.sirv_ref_gtf} \
             --prefix {params.sirv_prefix} \
-            --threads {threads}
+            --threads {threads}\n" if USE_SIRV else "") + """
         scripts/human_isoquant_assembly.sh \
             --infile {input.mapped_bam} \
             --outdir {params.human_isoquant_dir} \

@@ -118,6 +118,11 @@ class SIRVAnalyzer:
             gtf_file = os.path.join(gtf_path, f"{sample_id}_{flowcell_id}_sirv.stringtie.gtf")
             output_file = os.path.join(gtf_path, f"{sample_id}_{flowcell_id}_sirv_counts.tsv")
             
+            # Checking if GTF file exists before trying to read it
+            if not os.path.exists(gtf_file):
+                print(f"Warning: SIRV GTF file not found: {gtf_file}")
+                continue  # Skip this file and move to the next sample
+
             # Use polars logic to read and filter GTF
             gtf = read_gtf(gtf_file)
             features = gtf.filter(pl.col("feature") == "transcript")[
@@ -323,10 +328,16 @@ class SIRVAnalyzer:
 
     def run(self):
         """running the full pipeline"""
+        if not self.config.get('use_sirv', True):
+            print("SIRV analysis disabled, skipping...")
+            return
+
+        print("Starting SIRV Analysis Pipeline...")
         self.load_expected_values()
         self.parse_gtf_files()
         self.merge_data()
         self.plot_metrics()
+        print("SIRV Analysis Pipeline completed successfully.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

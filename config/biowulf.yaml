@@ -7,6 +7,10 @@
 #skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
 skip_basecall: false
 
+#Enable or Disable SIRV spike-in analysis (set to true if you spiked your samples with SIRV controls)
+use_sirv: true
+
+
 # You could change these directories as you see fit
 base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
 ont_ubam: 'snakemake_test/ONT_UBAM'
@@ -17,19 +21,21 @@ assembly_dir: 'snakemake_test/ASSEMBLY/'
 isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
 stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
 merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
-#SIRV analysis directory (optional)
+
+#SIRV analysis directory (optional) if you use SIRV spike-ins
 #Directory where the SIRV Set4 excel file is located
-data_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
+data_dir: 'SIRV_Set4_Norm_sequence-design-overview_20210507a.xlsx'
 
 # Path to the container image (optional)
 
-# these directories should be kept unchanged
+# These directories should be provided for your corresponding reference files
 genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
 sirvome: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta'
 human_genedb: '/data/CARDPB/resources/hg38/gencode.v43.annotation.gtf'
 sirv_genedb: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.corrected.gtf'
+
+# This directory should be kept unchanged unless you moved the scripts folder
 script_dir: 'scripts/'
 
 # you could change the the source sample file but specify the path and name accordingly
-# sample_file: 'input_example.txt'
-sample_file: '/data/CARD_AUX/LRS_temp/NABEC_RNA/SAMPLE_SHEETS/basecalling_sample_sheet_jan_19.txt'
+sample_file: 'input_example.txt'
