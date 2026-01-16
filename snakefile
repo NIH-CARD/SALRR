@@ -109,13 +109,19 @@ rule alignment:
     input:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq'
     output:  
-        mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
+        mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam',
+        #QC output files
+        sirv_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_sirv_stats.txt' if USE_SIRV else [],
+        human_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_stats.txt',
+        human_stats_filtered = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_filtered_stats.txt'
     threads: 20
     resources:
         runtimes=4320, mem_mb=200000, disk_mb=100000
     params:
         use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
+        mapped_qc_dir = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/',
+        mapped_qc_file = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_stats.txt',
         human_fasta = config.genome,
         sirv_fasta = config.get('sirvome', ''),
         sirv_flag = lambda wildcards: f"--sirvome {config.get('sirvome', '')}" if USE_SIRV else "--skip-sirv"
@@ -127,6 +133,8 @@ rule alignment:
             --infile {input.fastq} \
             --outfile {output.mapped_bam} \
             --outdir {params.mapped_dir} \
+            --qc-dir {params.mapped_qc_dir} \
+            --qc-file {params.mapped_qc_file} \
             --genome {params.human_fasta} \
             {params.sirv_flag} \
             --threads {threads}

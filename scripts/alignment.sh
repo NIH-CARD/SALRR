@@ -20,6 +20,8 @@ if [ "$#" != 0 ]; then
             --genome) assert_argument "$1" "$opt"; GENOME="$1"; shift;;
             --sirvome) assert_argument "$1" "$opt"; SIRV_REF="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
+            --qc-dir) assert_argument "$1" "$opt"; QC_DIR="$1"; shift;;
+            --qc-file) assert_argument "$1" "$opt"; QC_FILE="$1"; shift;;
             --skip-sirv) SKIP_SIRV=true; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
@@ -46,10 +48,17 @@ SKIP_SIRV=${SKIP_SIRV:-false}
 
 mkdir -p "${OUTDIR}"
 
+# making a directory for output QC if it does not exist
+
+mkdir -p "${QC_DIR}"
+
 if [ "$SKIP_SIRV" = "false" ]; then
-    echo "Running with SIRV spike-in analysis..."
+    echo "Running with SIRV spike-in mapping..."
     
-    # map reads to SIRVome
+ ############# MAPPING WITH SIRV SPIKE-IN #############
+
+
+    # map reads to SIRVome (unfiltered)
     minimap2 \
         -t "${THREADS}" \
         -ax splice \
@@ -64,7 +73,13 @@ if [ "$SKIP_SIRV" = "false" ]; then
     # index bam, exit if it fails
     samtools index "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" || exit 1
 
-    # filter the SIRV mapped reads
+    #Generating QC stats of SIRV mapping
+    samtools stats \
+        -@ "${THREADS}" \
+        "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" \
+        > "${QC_FILE%_stats.txt}_sirv_stats.txt" || exit 1
+
+    # filter the SIRV mapped reads for downstream SIRV analysis
     samtools view \
         -q 40 \
         -F 2304 \
@@ -76,7 +91,7 @@ if [ "$SKIP_SIRV" = "false" ]; then
     # index the mapped filtered sirv bam reads, exit if it fails
     samtools index "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" || exit 1
 
-    # convert unmapped human reads to fastq, exit if it fails
+    # Extract unmapped reads from SIRV (these should be human or sample only reads)
     samtools view \
         -f 4 \
         -b \
@@ -95,45 +110,63 @@ if [ "$SKIP_SIRV" = "false" ]; then
         "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" \
         > "${INFILE%.trimmed.fastq}_human_unmapped.fastq" || exit 1
 
-    # map the human reads to the genome
+
+    # Map human reads (SIRV-unmapped) to human genome (unfiltered for accurate QC stats)
     minimap2 \
         -t "${THREADS}" \
         -ax splice \
         "${GENOME}" \
         "${INFILE%.trimmed.fastq}_human_unmapped.fastq" - \
         | samtools view \
+        -b - \
+        | samtools sort \
+        -@ "${THREADS}" - \
+        > "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" || exit 1
+
+    # Index the human unfiltered mapped bam, exit if it fails
+    samtools index "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" || exit 1
+
+    # Human QC stats (on unfiltered SIRV-depleted - shows % of SIRV-depleted reads that map to human)
+    samtools stats \
+        -@ "${THREADS}" \
+        "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" \
+        > "${QC_FILE%_stats.txt}_human_stats.txt" || exit 1
+
+     # Filter human mapped reads (final BAM for assembly/quantification)
+    samtools view \
         -q 40 \
         -F 2304 \
-        -b - \
+        -b \
+        "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" \
         | samtools sort \
         -@ "${THREADS}" - \
         > "${OUTFILE}" || exit 1
 
-    # index the human mapped bam, exit if it fails
+    # Index the final human mapped filtered bam, exit if it fails
     samtools index "${OUTFILE}" || exit 1
+
+
+    # Final BAM stats (shows impact of quality filtering)
+    samtools stats \
+        -@ "${THREADS}" \
+        "${OUTFILE}" \
+        > "${QC_FILE%_stats.txt}_human_filtered_stats.txt" || exit 1
+
+    # Cleaning up the unfiltered BAM to clear disk space (these files are too large to keep)
+    echo "Removing intermediate files..."
+    rm "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam"
+    rm "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam.bai"
     
-    # # Generate mapping statistics with SIRV
-    # STATS_FILE="${OUTDIR}/$(basename ${OUTFILE%.bam})_mapping_stats.txt"
-    # TOTAL_READS=$(echo $(cat "${INFILE}" | wc -l) / 4 | bc)
-    # SIRV_MAPPED=$(samtools view -c -F 4 "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam")
-    # HUMAN_MAPPED=$(samtools view -c "${OUTFILE}")
-    # SIRV_UNMAPPED=$(samtools view -c "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam")
-    # UNMAPPED=$((TOTAL_READS - SIRV_MAPPED - HUMAN_MAPPED))
-    
-    # SIRV_PCT=$(echo "scale=2; $SIRV_MAPPED * 100 / $TOTAL_READS" | bc)
-    # HUMAN_PCT=$(echo "scale=2; $HUMAN_MAPPED * 100 / $TOTAL_READS" | bc)
-    # UNMAPPED_PCT=$(echo "scale=2; $UNMAPPED * 100 / $TOTAL_READS" | bc)
-    # HUMAN_OF_NONSIRVS=$(echo "scale=2; $HUMAN_MAPPED * 100 / $SIRV_UNMAPPED" | bc)
-    
-    # echo -e "Total Reads:\t$TOTAL_READS" > "$STATS_FILE"
-    # echo -e "SIRV Mapped:\t$SIRV_MAPPED\t($SIRV_PCT%)" >> "$STATS_FILE"
-    # echo -e "Human Mapped:\t$HUMAN_MAPPED\t($HUMAN_PCT%)" >> "$STATS_FILE"
-    # echo -e "Unmapped:\t$UNMAPPED\t($UNMAPPED_PCT%)" >> "$STATS_FILE"
-    # echo -e "Human % of non-SIRV reads:\t$HUMAN_OF_NONSIRVS%" >> "$STATS_FILE"
-    
+    echo "Alignment with SIRV spike-in complete!"
+
+
+
+ ############# MAPPING WITH NO SIRV ##################
+
 else
-    echo "Skipping SIRV analysis, mapping directly to human genome..."
+    echo "Skipping SIRV alignment, mapping directly to human genome..."
     
+
     # Map directly to human genome
     minimap2 \
         -t "${THREADS}" \
@@ -141,27 +174,47 @@ else
         "${GENOME}" \
         "${INFILE}" - \
         | samtools view \
+        -b - \
+        | samtools sort \
+        -@ "${THREADS}" - \
+        > "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" || exit 1
+    
+    # index the human mapped bam, exit if it fails
+    samtools index "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" || exit 1
+
+    # Human QC stats (on unfiltered)
+    samtools stats \
+        -@ "${THREADS}" \
+        "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" \
+        > "${QC_FILE%_stats.txt}_human_stats.txt" || exit 1
+    
+    # Filter human mapped reads (final BAM)
+    samtools view \
         -q 40 \
         -F 2304 \
-        -b - \
+        -b \
+        "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" \
         | samtools sort \
         -@ "${THREADS}" - \
         > "${OUTFILE}" || exit 1
     
-    # index the human mapped bam, exit if it fails
+    # Index the final human mapped filtered bam, exit if it fails
     samtools index "${OUTFILE}" || exit 1
+
+    # Final BAM stats
+    samtools stats \
+        -@ "${THREADS}" \
+        "${OUTFILE}" \
+        > "${QC_FILE%_stats.txt}_human_filtered_stats.txt" || exit 1
+
+
+    #  Cleaning up the unfiltered BAM to clear disk space (these files are too large to keep)
+    echo "Removing intermediate files..."
+    rm "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam"
+    rm "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam.bai"
     
-    # # Generate mapping statistics without SIRV
-    # STATS_FILE="${OUTDIR}/$(basename ${OUTFILE%.bam})_mapping_stats.txt"
-    # TOTAL_READS=$(echo $(cat "${INFILE}" | wc -l) / 4 | bc)
-    # HUMAN_MAPPED=$(samtools view -c "${OUTFILE}")
-    # UNMAPPED=$((TOTAL_READS - HUMAN_MAPPED))
-    
-    # HUMAN_PCT=$(echo "scale=2; $HUMAN_MAPPED * 100 / $TOTAL_READS" | bc)
-    # UNMAPPED_PCT=$(echo "scale=2; $UNMAPPED * 100 / $TOTAL_READS" | bc)
-    
-    # echo -e "Total Reads:\t$TOTAL_READS" > "$STATS_FILE"
-    # echo -e "Human Mapped:\t$HUMAN_MAPPED\t($HUMAN_PCT%)" >> "$STATS_FILE"
-    # echo -e "Unmapped:\t$UNMAPPED\t($UNMAPPED_PCT%)" >> "$STATS_FILE"
-    # echo -e "SIRV analysis: DISABLED" >> "$STATS_FILE"
+    echo "Human mapping complete!"
+
+
+
 fi

@@ -39,3 +39,7 @@ script_dir: 'scripts/'
 
 # you could change the the source sample file but specify the path and name accordingly
 sample_file: 'input_example.txt'
+
+
+# Directories for QC steps
+qc_dir: 'snakemake_test/QC'

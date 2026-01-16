@@ -43,3 +43,7 @@ sample_file: 'input_example.txt'
 
 # Container configuration
 container_image: 'lrrna_0.9.sif'
+
+# Directories for QC steps
+qc_dir: 'snakemake_test/QC/'
+
