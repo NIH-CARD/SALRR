@@ -22,6 +22,9 @@ merge_dir: 'snakemake/ASSEMBLY/MERGED'
 # Dorado model for basecalling (if enabled)
 dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
 
+# Pychopper kit configuration
+pychopper_kit: 'PCS114'
+
 # Reference genomes and annotations
 # IMPORTANT: These should point to absolute paths on your system
 # Update these paths to match your local setup
@@ -44,6 +47,7 @@ sample_file: 'input_example.txt'
 # Container configuration
 container_image: 'lrrna_0.9.sif'
 
-# Directories for QC steps
-qc_dir: 'snakemake_test/QC/'
+# configurations for QC steps (directories and configs)
+qc_dir: 'snakemake_test/QC'
+log_filesize_limit: 200000000
 

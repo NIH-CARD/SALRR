@@ -44,13 +44,9 @@ fi
 # Default: SIRV analysis enabled unless --skip-sirv flag is set
 SKIP_SIRV=${SKIP_SIRV:-false}
 
-# making the output directory if it does not exist
+# making the output directory and QC directory if they do not exist
 
-mkdir -p "${OUTDIR}"
-
-# making a directory for output QC if it does not exist
-
-mkdir -p "${QC_DIR}"
+mkdir -p "${OUTDIR}" "${QC_DIR}"
 
 if [ "$SKIP_SIRV" = "false" ]; then
     echo "Running with SIRV spike-in mapping..."
@@ -129,6 +125,7 @@ if [ "$SKIP_SIRV" = "false" ]; then
     # Human QC stats (on unfiltered SIRV-depleted - shows % of SIRV-depleted reads that map to human)
     samtools stats \
         -@ "${THREADS}" \
+        -r "${GENOME}" \
         "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" \
         > "${QC_FILE%_stats.txt}_human_stats.txt" || exit 1
 
@@ -145,12 +142,6 @@ if [ "$SKIP_SIRV" = "false" ]; then
     # Index the final human mapped filtered bam, exit if it fails
     samtools index "${OUTFILE}" || exit 1
 
-
-    # Final BAM stats (shows impact of quality filtering)
-    samtools stats \
-        -@ "${THREADS}" \
-        "${OUTFILE}" \
-        > "${QC_FILE%_stats.txt}_human_filtered_stats.txt" || exit 1
 
     # Cleaning up the unfiltered BAM to clear disk space (these files are too large to keep)
     echo "Removing intermediate files..."
@@ -185,6 +176,7 @@ else
     # Human QC stats (on unfiltered)
     samtools stats \
         -@ "${THREADS}" \
+        -r "${GENOME}" \
         "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" \
         > "${QC_FILE%_stats.txt}_human_stats.txt" || exit 1
     
@@ -200,12 +192,6 @@ else
     
     # Index the final human mapped filtered bam, exit if it fails
     samtools index "${OUTFILE}" || exit 1
-
-    # Final BAM stats
-    samtools stats \
-        -@ "${THREADS}" \
-        "${OUTFILE}" \
-        > "${QC_FILE%_stats.txt}_human_filtered_stats.txt" || exit 1
 
 
     #  Cleaning up the unfiltered BAM to clear disk space (these files are too large to keep)

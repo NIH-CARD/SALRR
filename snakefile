@@ -56,7 +56,9 @@ rule all:
             zip,  # ensure pairing of sample_id and flowcell_id from each line
             sample_id   = samples.iloc[:,0].tolist(),
             flowcell_id = samples.iloc[:,1].tolist()
-        )
+        ),
+        # Adding MultiQC report as a target to run after all samples are processed
+        config.base_dir + config.qc_dir + '/multiqc_report.html'
 
 # Basecalling rule only runs on Biowulf (skip_basecall: false)
 if not SKIP_BASECALL:
@@ -89,8 +91,11 @@ rule trimming:
         ubam = TRIMMING_INPUT
     output:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
+        trimming_qc_file = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/{flowcell_id}_{sample_id}.tsv'
     params:
-        outdir = config.base_dir + config.pychopper_dir
+        outdir = config.base_dir + config.pychopper_dir,
+        kit = config.pychopper_kit,
+        trimming_qc_dir = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/'
     threads: 20
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
@@ -101,7 +106,10 @@ rule trimming:
         scripts/trimming.sh \
             --infile {input.ubam} \
             --outfile {output.fastq}  \
+            --kit {params.kit} \
             --outdir {params.outdir} \
+            --qc-dir {params.trimming_qc_dir} \
+            --qc-file {output.trimming_qc_file} \
             --threads {threads}
         """
 
@@ -113,7 +121,6 @@ rule alignment:
         #QC output files
         sirv_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_sirv_stats.txt' if USE_SIRV else [],
         human_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_stats.txt',
-        human_stats_filtered = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_filtered_stats.txt'
     threads: 20
     resources:
         runtimes=4320, mem_mb=200000, disk_mb=100000
@@ -245,3 +252,47 @@ rule merge:
             --threads {threads}
         """
 
+rule create_multiqc_names:
+    output:
+        tsv = config.base_dir + config.qc_dir + '/multiqc_sample_names.tsv'
+    run:
+        import pandas as pd
+        with open(output.tsv, 'w') as f:
+            for idx, row in samples.iterrows():
+                sample_id = row[0]
+                flowcell_id = row[1]
+                # creating a TSV file to rename sample names during report generation
+                f.write(f"{sample_id}_{flowcell_id}_human_stats\t{sample_id}\n")
+                if USE_SIRV:
+                    f.write(f"{sample_id}_{flowcell_id}_sirv_stats\t{sample_id}_sirv\n")
+                f.write(f"{flowcell_id}_{sample_id}\t{sample_id}\n")
+
+rule multiqc_report:
+    input:
+        stats = expand(
+            config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_stats.txt',
+            zip,
+            sample_id = samples.iloc[:,0].tolist(),
+            flowcell_id = samples.iloc[:,1].tolist()
+        ),
+        name = config.base_dir + config.qc_dir + '/multiqc_sample_names.tsv'
+    output:
+        report = config.base_dir + config.qc_dir + '/multiqc_report.html'
+    params:
+        search_dir = config.base_dir + config.qc_dir,
+        outdir = config.base_dir + config.qc_dir,
+        multiqc_yaml = "config/multiqc_config.yaml"
+    threads: 2
+    resources:
+        runtime=4320, mem_mb=12000, disk_mb=5000
+    shell:
+        """
+        module load multiqc/1.28 || true
+        
+        multiqc {params.search_dir} \
+            -o {params.outdir} \
+            -n multiqc_report.html \
+            --replace-names {input.name} \
+            --config {params.multiqc_yaml} \
+            --force \
+        """

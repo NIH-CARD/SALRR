@@ -17,7 +17,10 @@ if [ "$#" != 0 ]; then
             # Your options go here.
             --infile) assert_argument "$1" "$opt"; INFILE="$1"; shift;;
             --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
+            --kit) assert_argument "$1" "$opt"; KIT="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
+            --qc-dir) assert_argument "$1" "$opt"; QC_DIR="$1"; shift;;
+            --qc-file) assert_argument "$1" "$opt"; QC_FILE="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
@@ -37,9 +40,9 @@ fi
 
 # Rest of code
 
-#making the output directory if it does not exist
+#making the output directory and QC directory if they do not exist
 
-mkdir -p "${OUTDIR}"
+mkdir -p "${OUTDIR}" "${QC_DIR}"
 
 # Converting BAM to FASTQ using samtools
 samtools fastq \
@@ -54,9 +57,9 @@ samtools fastq \
 pychopper \
   -t "${THREADS}" \
   -m phmm \
-  -k PCS114 \
+  -k "${KIT}" \
   -r "${OUTFILE%.trimmed.fastq}.pdf" \
-  -S "${OUTFILE%.trimmed.fastq}.tsv" \
+  -S "${QC_FILE}" \
   "${OUTFILE%.trimmed.fastq}.fastq" \
   "${OUTFILE}" 
 

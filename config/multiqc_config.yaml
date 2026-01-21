@@ -1,0 +1,3 @@
+# MultiQC Configuration
+# Increase file size limit to handle large samtools stats files
+log_filesize_limit: 2000000000
