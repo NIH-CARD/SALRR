@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --time 01:00:00
+#SBATCH --time 10:00:00
 
 ################################################################################
 # Snakemake Pipeline Launcher
