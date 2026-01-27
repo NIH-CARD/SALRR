@@ -20,8 +20,11 @@ if [ "$#" != 0 ]; then
             --genome) assert_argument "$1" "$opt"; GENOME="$1"; shift;;
             --sirvome) assert_argument "$1" "$opt"; SIRV_REF="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
-            --qc-dir) assert_argument "$1" "$opt"; QC_DIR="$1"; shift;;
             --qc-file) assert_argument "$1" "$opt"; QC_FILE="$1"; shift;;
+            --cramino-sirv-qc-file) assert_argument "$1" "$opt"; CRAMINO_SIRV_QC_FILE="$1"; shift;;
+            --cramino-human-qc-file) assert_argument "$1" "$opt"; CRAMINO_HUMAN_QC_FILE="$1"; shift;;
+            --mosdepth-sirv-prefix) assert_argument "$1" "$opt"; MOSDEPTH_SIRV_PREFIX="$1"; shift;;
+            --mosdepth-human-prefix) assert_argument "$1" "$opt"; MOSDEPTH_HUMAN_PREFIX="$1"; shift;;
             --skip-sirv) SKIP_SIRV=true; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
@@ -41,18 +44,40 @@ fi
 
 # Rest of code
 
+# loading Nanopack module for cramino
+# module load nanopack/20231214 || true
+# module load mosdepth/0.3.3 || true
+
 # Default: SIRV analysis enabled unless --skip-sirv flag is set
 SKIP_SIRV=${SKIP_SIRV:-false}
 
+# Deriving QC directory from QC file path
+
+    # MultiQC/Samtools paths
+QC_DIR=$(dirname "${QC_FILE}")
+
+    # Cramino paths
+CRAMINO_SIRV_QC_DIR=$(dirname "${CRAMINO_SIRV_QC_FILE}")
+CRAMINO_HUMAN_QC_DIR=$(dirname "${CRAMINO_HUMAN_QC_FILE}")
+
+    # Mosdepth paths
+MOSDEPTH_SIRV_PREFIX="${MOSDEPTH_SIRV_PREFIX%.mosdepth.summary.txt}"
+MOSDEPTH_HUMAN_PREFIX="${MOSDEPTH_HUMAN_PREFIX%.mosdepth.summary.txt}"
+
+MOSDEPTH_SIRV_PREFIX_DIR=$(dirname "${MOSDEPTH_SIRV_PREFIX}")
+MOSDEPTH_HUMAN_PREFIX_DIR=$(dirname "${MOSDEPTH_HUMAN_PREFIX}")
+
 # making the output directory and QC directory if they do not exist
 
-mkdir -p "${OUTDIR}" "${QC_DIR}"
+mkdir -p "${OUTDIR}" "${QC_DIR}" "${CRAMINO_HUMAN_QC_DIR}" "${MOSDEPTH_HUMAN_PREFIX_DIR}"
 
 if [ "$SKIP_SIRV" = "false" ]; then
     echo "Running with SIRV spike-in mapping..."
     
  ############# MAPPING WITH SIRV SPIKE-IN #############
 
+    # Making SIRV QC directory if it does not exist
+    mkdir -p "${CRAMINO_SIRV_QC_DIR}" "${MOSDEPTH_SIRV_PREFIX_DIR}"
 
     # map reads to SIRVome (unfiltered)
     minimap2 \
@@ -74,6 +99,20 @@ if [ "$SKIP_SIRV" = "false" ]; then
         -@ "${THREADS}" \
         "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" \
         > "${QC_FILE%_stats.txt}_sirv_stats.txt" || exit 1
+
+    #Generating Cramino QC stats of SIRV mapping
+    cramino \
+        "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" \
+        --threads "${THREADS}" \
+        --spliced \
+        --hist \
+        > "${CRAMINO_SIRV_QC_FILE}" || exit 1
+
+    # Mosdepth coverage for SIRV mapping
+    mosdepth \
+        --threads "${THREADS}" \
+        "${MOSDEPTH_SIRV_PREFIX}" \
+        "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" || exit 1
 
     # filter the SIRV mapped reads for downstream SIRV analysis
     samtools view \
@@ -129,6 +168,20 @@ if [ "$SKIP_SIRV" = "false" ]; then
         "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" \
         > "${QC_FILE%_stats.txt}_human_stats.txt" || exit 1
 
+    #Generating Cramino QC stats of human mapping
+    cramino \
+        "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" \
+        --threads "${THREADS}" \
+        --spliced \
+        --hist \
+        > "${CRAMINO_HUMAN_QC_FILE}" || exit 1
+
+    # Mosdepth coverage for human mapping
+    mosdepth \
+        --threads "${THREADS}" \
+        "${MOSDEPTH_HUMAN_PREFIX}" \
+        "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" || exit 1
+
      # Filter human mapped reads (final BAM for assembly/quantification)
     samtools view \
         -q 40 \
@@ -179,6 +232,20 @@ else
         -r "${GENOME}" \
         "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" \
         > "${QC_FILE%_stats.txt}_human_stats.txt" || exit 1
+
+    #Generating Cramino QC stats of human mapping
+    cramino \
+        "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" \
+        --threads "${THREADS}" \
+        --spliced \
+        --hist \
+        > "${CRAMINO_HUMAN_QC_FILE}" || exit 1
+    
+    # Mosdepth coverage for human mapping
+    mosdepth \
+        --threads "${THREADS}" \
+        "${MOSDEPTH_HUMAN_PREFIX}" \
+        "${OUTFILE%.sorted.bam}_unfiltered.sorted.bam" || exit 1
     
     # Filter human mapped reads (final BAM)
     samtools view \

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --time 10:00:00
+#SBATCH --time 01:00:00
 
 ################################################################################
 # Snakemake Pipeline Launcher
@@ -61,9 +61,9 @@ case "$PROFILE" in
 esac
 
 # Ensure container exists (Standard across all profiles)
-if [[ ! -f "lrrna_0.9.sif" ]]; then
+if [[ ! -f "lrrna_1.0.sif" ]]; then
     echo "Container image not found. Downloading..."
-    singularity pull oras://quay.io/datatecnica/lrrna:0.9
+    singularity pull oras://quay.io/datatecnica/lrrna:1.0
 fi
 
 ################################################################################

@@ -66,7 +66,8 @@ if not SKIP_BASECALL:
         input:
             pod5 = config.base_dir + '{sample_id}/{sample_id}/{flowcell_id}/pod5'
         output:
-            ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam'
+            ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam',
+            basecalling_qc_file = config.base_dir + config.qc_dir + '/basecalling_qc/{flowcell_id}_{sample_id}_cramino_qc.txt'
         resources:
             runtime=4320, mem_mb=150000, gpu=1, gpu_model='a100', disk_mb=50000
         threads: 30
@@ -80,6 +81,8 @@ if not SKIP_BASECALL:
                 --outfile {output.ubam} \
                 --outdir {params.outdir} \
                 --model {params.model} \
+                --qc-file {output.basecalling_qc_file} \
+                --threads {threads}
             """
 if not SKIP_BASECALL:
     TRIMMING_INPUT = rules.basecall.output.ubam
@@ -91,16 +94,16 @@ rule trimming:
         ubam = TRIMMING_INPUT
     output:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
-        trimming_qc_file = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/{flowcell_id}_{sample_id}.tsv'
+        trimming_qc_file = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/{sample_id}_{flowcell_id}.tsv',
+        cramino_qc_file = config.base_dir + config.qc_dir + '/trimming_qc/cramino_stats/{sample_id}_{flowcell_id}_cramino_qc.txt'
     params:
         outdir = config.base_dir + config.pychopper_dir,
         kit = config.pychopper_kit,
-        trimming_qc_dir = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/'
     threads: 20
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
     singularity:
-        "./lrrna_0.9.sif"
+        "./lrrna_1.0.sif"
     shell: 
         """
         scripts/trimming.sh \
@@ -108,8 +111,8 @@ rule trimming:
             --outfile {output.fastq}  \
             --kit {params.kit} \
             --outdir {params.outdir} \
-            --qc-dir {params.trimming_qc_dir} \
             --qc-file {output.trimming_qc_file} \
+            --cramino-qc-file {output.cramino_qc_file} \
             --threads {threads}
         """
 
@@ -120,28 +123,34 @@ rule alignment:
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam',
         #QC output files
         sirv_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_sirv_stats.txt' if USE_SIRV else [],
+        mosdepth_sirv_summary = config.base_dir + config.qc_dir + '/mapping_qc/mosdepth_sirv/{sample_id}_{flowcell_id}.mosdepth.summary.txt' if USE_SIRV else [],
+        cramino_sirv_stats = config.base_dir + config.qc_dir + '/mapping_qc/cramino_sirv_stats/{sample_id}_{flowcell_id}_cramino_qc.txt' if USE_SIRV else [],
         human_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_stats.txt',
+        cramino_human_stats = config.base_dir + config.qc_dir + '/mapping_qc/cramino_human_stats/{sample_id}_{flowcell_id}_cramino_qc.txt',
+        mosdepth_human_summary = config.base_dir + config.qc_dir + '/mapping_qc/mosdepth_human/{sample_id}_{flowcell_id}.mosdepth.summary.txt'
     threads: 20
     resources:
         runtimes=4320, mem_mb=200000, disk_mb=100000
     params:
         use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
-        mapped_qc_dir = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/',
         mapped_qc_file = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_stats.txt',
         human_fasta = config.genome,
         sirv_fasta = config.get('sirvome', ''),
         sirv_flag = lambda wildcards: f"--sirvome {config.get('sirvome', '')}" if USE_SIRV else "--skip-sirv"
     singularity:
-        "./lrrna_0.9.sif"
+        "./lrrna_1.0.sif"
     shell: 
         """
         scripts/alignment.sh \
             --infile {input.fastq} \
             --outfile {output.mapped_bam} \
             --outdir {params.mapped_dir} \
-            --qc-dir {params.mapped_qc_dir} \
             --qc-file {params.mapped_qc_file} \
+            --cramino-sirv-qc-file {output.cramino_sirv_stats} \
+            --cramino-human-qc-file {output.cramino_human_stats} \
+            --mosdepth-sirv-prefix {output.mosdepth_sirv_summary} \
+            --mosdepth-human-prefix {output.mosdepth_human_summary} \
             --genome {params.human_fasta} \
             {params.sirv_flag} \
             --threads {threads}
@@ -163,7 +172,7 @@ rule stringtie:
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
     singularity:
-        "./lrrna_0.9.sif"
+        "./lrrna_1.0.sif"
     shell: 
         """
         """ + ("scripts/sirv_stringtie_assembly.sh \
@@ -200,7 +209,7 @@ rule isoquant:
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
     singularity:
-        "./lrrna_0.9.sif"
+        "./lrrna_1.0.sif"
     shell: 
         """
         """ + ("scripts/sirv_isoquant_assembly.sh \
@@ -236,7 +245,7 @@ rule merge:
     output:
         annotated_gtf = config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
     singularity:
-        "./lrrna_0.9.sif"
+        "./lrrna_1.0.sif"
     shell: 
         """
         scripts/transcript_merge.sh \
@@ -265,7 +274,7 @@ rule create_multiqc_names:
                 f.write(f"{sample_id}_{flowcell_id}_human_stats\t{sample_id}\n")
                 if USE_SIRV:
                     f.write(f"{sample_id}_{flowcell_id}_sirv_stats\t{sample_id}_sirv\n")
-                f.write(f"{flowcell_id}_{sample_id}\t{sample_id}\n")
+                f.write(f"{sample_id}_{flowcell_id}\t{sample_id}\n")
 
 rule multiqc_report:
     input:
@@ -285,10 +294,10 @@ rule multiqc_report:
     threads: 2
     resources:
         runtime=4320, mem_mb=12000, disk_mb=5000
+    singularity:
+        "./lrrna_1.0.sif"
     shell:
         """
-        module load multiqc/1.28 || true
-        
         multiqc {params.search_dir} \
             -o {params.outdir} \
             -n multiqc_report.html \
