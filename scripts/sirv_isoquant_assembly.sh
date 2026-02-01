@@ -38,7 +38,7 @@ fi
 
 mkdir -p "${OUTDIR}"
 
-# Run Isoquant Assembly
+# Run Isoquant
 
 isoquant.py \
     -t "${THREADS}" \
@@ -46,8 +46,9 @@ isoquant.py \
     --genedb ${GENEDB} \
     --bam "${INFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" \
     --data_type nanopore \
-    --check_canonical \
-    --sqanti_output \
+    --transcript_quantification unique_only \
+    --gene_quantification unique_only \
     --prefix ${PREFIX} \
     --count_exons \
+    --no_model_construction \
     --output ${OUTDIR}

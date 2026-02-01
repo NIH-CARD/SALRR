@@ -16,6 +16,7 @@ if [ "$#" != 0 ]; then
             --genedb) assert_argument "$1" "$opt"; GENEDB="$1"; shift;;
             --prefix) assert_argument "$1" "$opt"; PREFIX="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
+            --mode) assert_argument "$1" "$opt"; MODE="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -34,14 +35,17 @@ fi
 
 # Rest of code
 
-# loading modules
-
 # making the output directory if it does not exist already
 
 mkdir -p "${OUTDIR}"
 
-# Run Isoquant Assembly
+# IsoQuant quantification or discovery mode optionality
+ISOQUANT_OPTS=""
+if [ "$MODE" = "quantification" ]; then
+    ISOQUANT_OPTS="--no_model_construction"  # Quantification only, no novel transcripts
+fi
 
+# Run Isoquant 
 isoquant.py \
     -t "${THREADS}" \
     --reference ${GENOME} \
@@ -53,4 +57,5 @@ isoquant.py \
     --sqanti_output \
     --prefix ${PREFIX} \
     --count_exons \
+    ${ISOQUANT_OPTS} \
     --output ${OUTDIR}

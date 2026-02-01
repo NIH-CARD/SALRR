@@ -106,8 +106,8 @@ gffcompare \
 isoquant.py \
     -t "${THREADS}" \
     --reference ${GENOME} \
-    --transcript_quantification all \
-    --gene_quantification all \
+    --transcript_quantification unique_only \
+    --gene_quantification unique_only \
     --no_model_construction \
     --data_type assembly \
     --count_exons   \

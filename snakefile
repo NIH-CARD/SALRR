@@ -35,6 +35,11 @@ if USE_SIRV and not config.get('sirvome'):
 if USE_SIRV and not config.get('sirv_genedb'):
     raise ValueError("use_sirv enabled but sirv_genedb path not set in config")
 
+# Read assembly mode setting (default: quantification for reference transcript abundance)
+ASSEMBLY_MODE = config.get('assembly_mode', 'quantification')
+if ASSEMBLY_MODE not in ['discovery', 'quantification']:
+    raise ValueError(f"assembly_mode must be 'discovery' or 'quantification', got: {ASSEMBLY_MODE}")
+
 samples = pd.read_csv(config.sample_file, header=None, sep=None, engine='python')
 #samples = pd.read_csv('basecalling_sample_sheet_jan_19.txt', header=None, sep=None, engine='python')
 
@@ -95,10 +100,13 @@ rule trimming:
     output:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq',
         trimming_qc_file = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/{sample_id}_{flowcell_id}.tsv',
+        read_stats = config.base_dir + config.qc_dir + '/trimming_qc/{sample_id}/{sample_id}_{flowcell_id}_read_stats.tsv',
         cramino_qc_file = config.base_dir + config.qc_dir + '/trimming_qc/cramino_stats/{sample_id}_{flowcell_id}_cramino_qc.txt'
     params:
         outdir = config.base_dir + config.pychopper_dir,
         kit = config.pychopper_kit,
+        min_q_score = config.minimum_quality_score,
+        min_length = config.minimum_read_length
     threads: 20
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
@@ -110,10 +118,13 @@ rule trimming:
             --infile {input.ubam} \
             --outfile {output.fastq}  \
             --kit {params.kit} \
+            --min-quality {params.min_q_score} \
+            --min-length {params.min_length} \
             --outdir {params.outdir} \
             --qc-file {output.trimming_qc_file} \
+            --read-stats {output.read_stats} \
             --cramino-qc-file {output.cramino_qc_file} \
-            --threads {threads}
+            --threads {threads} 
         """
 
 rule alignment:
@@ -130,7 +141,7 @@ rule alignment:
         mosdepth_human_summary = config.base_dir + config.qc_dir + '/mapping_qc/mosdepth_human/{sample_id}_{flowcell_id}.mosdepth.summary.txt'
     threads: 20
     resources:
-        runtimes=4320, mem_mb=200000, disk_mb=100000
+        runtime=4320, mem_mb=200000, disk_mb=100000
     params:
         use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
@@ -168,7 +179,8 @@ rule stringtie:
         human_ref_gtf = config.human_genedb,
         sirv_ref_gtf = config.get('sirv_genedb', ''),
         sirv_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/',
-        human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/'
+        human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/',
+        assembly_mode = ASSEMBLY_MODE
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
     singularity:
@@ -186,6 +198,7 @@ rule stringtie:
             --outdir {params.human_stringtie_dir} \
             --outfile {output.human_stringtie_gtf} \
             --ref_gtf {params.human_ref_gtf} \
+            --mode {params.assembly_mode} \
             --threads {threads}
         """
 
@@ -205,7 +218,8 @@ rule isoquant:
         human_ref_gtf = config.human_genedb,
         sirv_ref_gtf = config.get('sirv_genedb', ''),
         sirv_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/sirv/',
-        human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/'
+        human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/',
+        assembly_mode = ASSEMBLY_MODE
     resources:
         runtime=4320, mem_mb=120000, disk_mb=50000
     singularity:
@@ -225,6 +239,7 @@ rule isoquant:
             --genome {params.human_fasta} \
             --genedb {params.human_ref_gtf} \
             --prefix {params.prefix} \
+            --mode {params.assembly_mode} \
             --threads {threads}
         """
 

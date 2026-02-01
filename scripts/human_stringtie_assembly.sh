@@ -15,6 +15,7 @@ if [ "$#" != 0 ]; then
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
             --ref_gtf) assert_argument "$1" "$opt"; REF_GTF="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
+            --mode) assert_argument "$1" "$opt"; MODE="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -36,13 +37,16 @@ fi
 # create the output directory if it does not exist
 mkdir -p "${OUTDIR}"
 
-# Stringtie Assembly
+# StringTie quantification or discovery mode optionality
+STRINGTIE_OPTS="-L -t -c 2.5 -f 0.05"
+if [ "$MODE" = "quantification" ]; then
+    STRINGTIE_OPTS="$STRINGTIE_OPTS -e"  # -e = estimation only, no novel assembly
+fi
+
+# Run StringTie
 stringtie \
     ${INFILE} \
-    -L \
-    -t \
-    -c 2.5 \
-    -f 0.05 \
+    ${STRINGTIE_OPTS} \
     -p "${THREADS}" \
     -G ${REF_GTF} \
     -o ${OUTFILE}

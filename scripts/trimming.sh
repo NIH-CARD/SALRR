@@ -18,8 +18,11 @@ if [ "$#" != 0 ]; then
             --infile) assert_argument "$1" "$opt"; INFILE="$1"; shift;;
             --outfile) assert_argument "$1" "$opt"; OUTFILE="$1"; shift;;
             --kit) assert_argument "$1" "$opt"; KIT="$1"; shift;;
+            --min-quality) assert_argument "$1" "$opt"; MIN_QUALITY="$1"; shift;;
+            --min-length) assert_argument "$1" "$opt"; MIN_LENGTH="$1"; shift;;
             --outdir) assert_argument "$1" "$opt"; OUTDIR="$1"; shift;;
             --qc-file) assert_argument "$1" "$opt"; QC_FILE="$1"; shift;;
+            --read-stats) assert_argument "$1" "$opt"; READ_STATS="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
             --cramino-qc-file) assert_argument "$1" "$opt"; CRAMINO_QC_FILE="$1"; shift;;
       
@@ -64,8 +67,11 @@ pychopper \
   -t "${THREADS}" \
   -m phmm \
   -k "${KIT}" \
+  -Q "${MIN_QUALITY}" \
+  -z "${MIN_LENGTH}" \
   -r "${OUTFILE%.trimmed.fastq}.pdf" \
   -S "${QC_FILE}" \
+  -D "${READ_STATS}" \
   "${OUTFILE%.trimmed.fastq}.fastq" \
   "${OUTFILE}" || exit 1
 

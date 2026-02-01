@@ -44,9 +44,14 @@
 # sirv_genedb: '/path/to/your/SIRV_genedb.gtf'
 # sirv_ref_gtf: '/path/to/your/SIRV_ref.gtf'
 
-# # Pychopper kit configuration
+# # Pychopper configuration
 # pychopper_kit: 'PCS114'
+# minimum_quality_score: 10
+# minimum_read_length: 300
 
-## configurations for QC steps (directories and configs)
+# # Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
+# assembly_mode: 'quantification'
+
+## configurations for MultiQC steps (directories and configs)
 # qc_dir: 'snakemake_test/QC'
 # log_filesize_limit: 200000000

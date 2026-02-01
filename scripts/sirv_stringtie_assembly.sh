@@ -36,10 +36,11 @@ fi
 # create the output directory if it does not exist
 mkdir -p "${OUTDIR}"
 
-# Stringtie Assembly
+# Run Stringtie
 stringtie \
     ${INFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam \
     -L \
+    -e \
     -p "${THREADS}" \
     -G ${REF_GTF} \
     -o ${OUTFILE}

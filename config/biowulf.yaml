@@ -22,8 +22,13 @@ isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
 stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
 merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
 
-# Pychopper kit configuration
+# Pychopper configuration
 pychopper_kit: 'PCS114'
+minimum_quality_score: 10
+minimum_read_length: 300
+
+# Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
+assembly_mode: 'quantification'
 
 #SIRV analysis directory (optional) if you use SIRV spike-ins
 #Directory where the SIRV Set4 excel file is located
@@ -44,6 +49,6 @@ script_dir: 'scripts/'
 sample_file: 'input_example.txt'
 
 
-# configurations for QC steps (directories and configs)
+# configurations for MultiQC steps (directories and configs)
 qc_dir: 'snakemake_test/QC'
 log_filesize_limit: 2000000000
