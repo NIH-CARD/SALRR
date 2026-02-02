@@ -37,12 +37,6 @@ fi
 
 # Rest of code
 
-# loading modules
-
-module load dorado/0.9.0
-module load pod5/0.3.15
-module load nanopack/20231214
-
 # Deriving QC directory from QC file path
 QC_DIR=$(dirname "${QC_FILE}")
 

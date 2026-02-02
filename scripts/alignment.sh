@@ -44,10 +44,6 @@ fi
 
 # Rest of code
 
-# loading Nanopack module for cramino
-# module load nanopack/20231214 || true
-# module load mosdepth/0.3.3 || true
-
 # Default: SIRV analysis enabled unless --skip-sirv flag is set
 SKIP_SIRV=${SKIP_SIRV:-false}
 

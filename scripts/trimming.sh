@@ -43,8 +43,6 @@ fi
 
 # Rest of code
 
-# module load nanopack/20231214 || true
-
 # Deriving QC directory from QC file path
 QC_DIR=$(dirname "${QC_FILE}")
 CRAMINO_QC_DIR=$(dirname "${CRAMINO_QC_FILE}")
