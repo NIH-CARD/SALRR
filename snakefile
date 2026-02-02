@@ -286,7 +286,7 @@ rule create_multiqc_names:
                 sample_id = row[0]
                 flowcell_id = row[1]
                 # creating a TSV file to rename sample names during report generation
-                f.write(f"{sample_id}_{flowcell_id}_human_stats\t{sample_id}\n")
+                f.write(f"{sample_id}_{flowcell_id}_human_stats\t{sample_id}_human\n")
                 if USE_SIRV:
                     f.write(f"{sample_id}_{flowcell_id}_sirv_stats\t{sample_id}_sirv\n")
                 f.write(f"{sample_id}_{flowcell_id}\t{sample_id}\n")
