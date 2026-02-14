@@ -19,13 +19,20 @@ isoquant_dir: 'snakemake/ASSEMBLY/ISOQUANT'
 stringtie_dir: 'snakemake/ASSEMBLY/STRINGTIE'
 merge_dir: 'snakemake/ASSEMBLY/MERGED'
 
-# Dorado model for basecalling (if enabled)
+# Dorado configurations
 dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
 
 # Pychopper configuration
 pychopper_kit: 'PCS114'
 minimum_quality_score: 10
 minimum_read_length: 300
+
+
+# FastQ Screen contamination screening (runs after trimming, before alignment)
+use_fastq_screen: true
+fastq_screen_conf: 'config/fastq_screen_minimap2.conf'
+fastq_screen_subset: 100000  # number of reads to screen (0 = all reads)
+
 
 # Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
 assembly_mode: 'quantification'
@@ -49,10 +56,8 @@ script_dir: 'scripts/'
 # Sample sheet
 sample_file: 'input_example.txt'
 
-# Container configuration
-container_image: 'lrrna_0.9.sif'
 
 # configurations for MultiQC steps (directories and configs)
-qc_dir: 'snakemake_test/QC'
+qc_dir: '/path/to/QC'
 log_filesize_limit: 200000000
 

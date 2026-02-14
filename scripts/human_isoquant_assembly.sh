@@ -40,7 +40,7 @@ fi
 mkdir -p "${OUTDIR}"
 
 # IsoQuant quantification or discovery mode optionality
-ISOQUANT_OPTS=""
+ISOQUANT_OPTS="--check_canonical --sqanti_output"
 if [ "$MODE" = "quantification" ]; then
     ISOQUANT_OPTS="--no_model_construction"  # Quantification only, no novel transcripts
 fi
@@ -53,8 +53,6 @@ isoquant.py \
     --complete_genedb \
     --bam ${INFILE} \
     --data_type nanopore \
-    --check_canonical \
-    --sqanti_output \
     --prefix ${PREFIX} \
     --count_exons \
     ${ISOQUANT_OPTS} \

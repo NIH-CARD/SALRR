@@ -38,7 +38,7 @@ fi
 
 mkdir -p "${OUTDIR}"
 
-# Run Isoquant
+# Run Isoquant on SIRV for quantification only
 
 isoquant.py \
     -t "${THREADS}" \
@@ -47,7 +47,7 @@ isoquant.py \
     --bam "${INFILE%_human_mapped.sorted.bam}_SIRVome_mapped_filtered.sorted.bam" \
     --data_type nanopore \
     --transcript_quantification unique_only \
-    --gene_quantification unique_only \
+    --gene_quantification unique_splicing_consistent \
     --prefix ${PREFIX} \
     --count_exons \
     --no_model_construction \

@@ -20,6 +20,9 @@ if [ "$#" != 0 ]; then
             --ref_gtf) assert_argument "$1" "$opt"; REF_GTF="$1"; shift;;
             --prefix) assert_argument "$1" "$opt"; PREFIX="$1"; shift;;
             --threads) assert_argument "$1" "$opt"; THREADS="$1"; shift;;
+            --isoquant_counts) assert_argument "$1" "$opt"; ISOQUANT_COUNTS="$1"; shift;;
+            --assembly_mode) assert_argument "$1" "$opt"; ASSEMBLY_MODE="$1"; shift;;
+            --scripts_dir) assert_argument "$1" "$opt"; SCRIPTS_DIR="$1"; shift;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -47,26 +50,120 @@ mkdir -p ${MERGE_DIR}
 awk -F '\t' '$7 != "." {print}' ${STRINGTIE_GTF} \
     > ${STRINGTIE_GTF%.gtf}_tmp.gtf
 
-#convert stringtie gtf to bed12
-python \
-${TAMA_BASE_DIR}/tama_format_gtf_to_bed12_stringtie.py \
-    ${STRINGTIE_GTF%.gtf}_tmp.gtf \
-    ${OUTFILE%.annotated.gtf}_stringtie.bed
+#convert stringtie gtf to bed12 (we don't need this file)
+# python \
+# ${TAMA_BASE_DIR}/tama_format_gtf_to_bed12_stringtie.py \
+#     ${STRINGTIE_GTF%.gtf}_tmp.gtf \
+#     ${OUTFILE%.annotated.gtf}_stringtie.bed
 
-# # after you convert the stringtie gtf to bed12, you can remove the tmp gtf
-rm ${STRINGTIE_GTF%.gtf}_tmp.gtf || exit 1
+# # # after you convert the stringtie gtf to bed12, you can remove the tmp gtf
+# rm ${STRINGTIE_GTF%.gtf}_tmp.gtf || exit 1
 
 
-#convert isoquant to bed12
-python \
-${TAMA_BASE_DIR}/tama_format_gtf_to_bed12_ensembl.py \
-    ${ISOQUANT_GTF} \
-    ${OUTFILE%.annotated.gtf}_isoquant.bed
+# #convert isoquant to bed12 (we also don't need this file)
+# python \
+# ${TAMA_BASE_DIR}/tama_format_gtf_to_bed12_ensembl.py \
+#     ${ISOQUANT_GTF} \
+#     ${OUTFILE%.annotated.gtf}_isoquant.bed
+
+
+###############################################################################
+# FILTERING BLOCK (discovery mode only)
+# In discovery mode, filter both arms before TAMA merge:
+#   1. Filter StringTie GTF by TPM > 0
+#   2. Re-quantify filtered StringTie transcripts with IsoQuant (#2)
+#   3. Filter IsoQuant direct arm by CPM > 1
+#   4. Filter IsoQuant-on-StringTie arm by CPM > 1
+#   5. Re-convert filtered GTFs to BED for TAMA merge
+###############################################################################
+
+#### We don't need these variables anymore since we will be using the filtered versions
+# STRINGTIE_BED="${OUTFILE%.annotated.gtf}_stringtie.bed"
+# ISOQUANT_BED="${OUTFILE%.annotated.gtf}_isoquant.bed"
+
+if [ "${ASSEMBLY_MODE}" = "discovery" ]; then
+    echo "=== Discovery mode: applying filtering before TAMA merge ==="
+
+    # --- Step 1: Filter StringTie GTF to keep only transcripts with TPM > 0 ---
+    echo "Step 1: Filtering StringTie GTF by TPM > 0..."
+    STRINGTIE_FILTERED_GTF="${MERGE_DIR}/${PREFIX}_stringtie_tpm_filtered.gtf"
+    python ${SCRIPTS_DIR}/filter_stringtie_by_tpm.py \
+        --gtf ${STRINGTIE_GTF%.gtf}_tmp.gtf \
+        --output-gtf ${STRINGTIE_FILTERED_GTF} \
+        --tpm-threshold 0 || exit 1
+
+    # # after you filter the stringtie processed gtf, you can remove the tmp gtf
+    rm ${STRINGTIE_GTF%.gtf}_tmp.gtf || exit 1
+
+    # --- Step 2: IsoQuant #2 — re-quantify filtered StringTie transcripts ---
+    echo "Step 2: Running IsoQuant re-quantification on filtered StringTie GTF..."
+    ISOQUANT_ON_STRINGTIE_DIR="${MERGE_DIR}/${PREFIX}_isoquant_on_stringtie"
+    isoquant.py \
+        -t "${THREADS}" \
+        --reference ${GENOME} \
+        --transcript_quantification unique_only \
+        --gene_quantification unique_splicing_consistent \
+        --no_model_construction \
+        --data_type nanopore \
+        --count_exons \
+        --bam ${INPUT_BAM} \
+        --genedb ${STRINGTIE_FILTERED_GTF} \
+        --prefix ${PREFIX}_stringtie_requant \
+        -o ${ISOQUANT_ON_STRINGTIE_DIR} || exit 1
+
+    # Locate the IsoQuant-on-StringTie outputs
+    ISOQUANT_ON_ST_COUNTS="${ISOQUANT_ON_STRINGTIE_DIR}/${PREFIX}_stringtie_requant/${PREFIX}_stringtie_requant.transcript_counts.tsv"
+    
+    
+    ####GTF will not be produced for requantification so reuse the STRINGTIE_FILTERED_GTF
+    # ISOQUANT_ON_ST_GTF="${ISOQUANT_ON_STRINGTIE_DIR}/${PREFIX}_stringtie_requant/${PREFIX}_stringtie_requant.transcript_models.gtf"
+
+
+    # --- Step 3: Filter IsoQuant direct arm (#1) by CPM > 1 ---
+    echo "Step 3: Filtering IsoQuant direct arm by CPM > 1..."
+    ISOQUANT_CPM_FILTERED_GTF="${MERGE_DIR}/${PREFIX}_isoquant_cpm_filtered.gtf"
+    python ${SCRIPTS_DIR}/filter_transcripts_by_cpm.py \
+        --counts ${ISOQUANT_COUNTS} \
+        --gtf ${ISOQUANT_GTF} \
+        --output-gtf ${ISOQUANT_CPM_FILTERED_GTF} \
+        --output-ids ${MERGE_DIR}/${PREFIX}_isoquant_passing_ids.txt \
+        --cpm-threshold 1.0 || exit 1
+
+    # --- Step 4: Filter IsoQuant-on-StringTie arm (#2) by CPM > 1 ---
+    echo "Step 4: Filtering IsoQuant-on-StringTie arm by CPM > 1..."
+    ####Change Isoquant_onST_gtf
+    STRINGTIE_CPM_FILTERED_GTF="${MERGE_DIR}/${PREFIX}_stringtie_cpm_filtered.gtf"
+    python ${SCRIPTS_DIR}/filter_transcripts_by_cpm.py \
+        --counts ${ISOQUANT_ON_ST_COUNTS} \
+        --gtf ${STRINGTIE_FILTERED_GTF} \
+        --output-gtf ${STRINGTIE_CPM_FILTERED_GTF} \
+        --output-ids ${MERGE_DIR}/${PREFIX}_stringtie_passing_ids.txt \
+        --cpm-threshold 1.0 || exit 1
+
+    # --- Step 5: Re-convert filtered GTFs to BED12 for TAMA merge ---
+    echo "Step 5: Converting filtered GTFs to BED12..."
+
+    # StringTie arm (was re-quantified by IsoQuant, so use ensembl converter)
+    python ${TAMA_BASE_DIR}/tama_format_gtf_to_bed12_ensembl.py \
+        ${STRINGTIE_CPM_FILTERED_GTF} \
+        ${OUTFILE%.annotated.gtf}_stringtie_filtered.bed || exit 1
+
+    # IsoQuant direct arm
+    python ${TAMA_BASE_DIR}/tama_format_gtf_to_bed12_ensembl.py \
+        ${ISOQUANT_CPM_FILTERED_GTF} \
+        ${OUTFILE%.annotated.gtf}_isoquant_filtered.bed || exit 1
+
+    # Use filtered BEDs for TAMA merge
+    STRINGTIE_BED="${OUTFILE%.annotated.gtf}_stringtie_filtered.bed"
+    ISOQUANT_BED="${OUTFILE%.annotated.gtf}_isoquant_filtered.bed"
+
+    echo "=== Filtering complete. Proceeding to TAMA merge with filtered transcripts ==="
+fi
 
 #create the file list which is the input for the merge step
-printf "%s\tcapped\t1,1,1\tIsoQuant\n%s\tcapped\t1,1,1\tStringTie\n" \
-    "${OUTFILE%.annotated.gtf}_stringtie.bed" \
-    "${OUTFILE%.annotated.gtf}_isoquant.bed" \
+printf "%s\tcapped\t1,1,1\tStringTie\n%s\tcapped\t1,1,1\tIsoQuant\n" \
+    "${STRINGTIE_BED}" \
+    "${ISOQUANT_BED}" \
     > ${MERGE_DIR}/${PREFIX}_transcript_merge_list.txt || exit 1
 
 # Merge parameters
@@ -107,9 +204,9 @@ isoquant.py \
     -t "${THREADS}" \
     --reference ${GENOME} \
     --transcript_quantification unique_only \
-    --gene_quantification unique_only \
+    --gene_quantification unique_splicing_consistent \
     --no_model_construction \
-    --data_type assembly \
+    --data_type nanopore \
     --count_exons   \
     --bam ${INPUT_BAM} \
     --genedb ${OUTFILE} \

@@ -4,4 +4,4 @@ logs/*
 snakemake/*
 slurm-*.out
 dag.pdf
-lrrna_1.0.sif
+lrrna_1.1.sif

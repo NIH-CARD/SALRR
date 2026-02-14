@@ -37,15 +37,16 @@ fi
 # create the output directory if it does not exist
 mkdir -p "${OUTDIR}"
 
-# StringTie quantification or discovery mode optionality
-STRINGTIE_OPTS="-L -t -c 2.5 -f 0.05"
+# StringTie quantification or discovery mode optionality (default: Discovery)
+STRINGTIE_OPTS="-t -c 2.5 -f 0.05"
 if [ "$MODE" = "quantification" ]; then
-    STRINGTIE_OPTS="$STRINGTIE_OPTS -e"  # -e = estimation only, no novel assembly
+    STRINGTIE_OPTS="-s 5 -c 1 -e"  # -e = estimation only, no novel assembly
 fi
 
 # Run StringTie
 stringtie \
     ${INFILE} \
+    -L \
     ${STRINGTIE_OPTS} \
     -p "${THREADS}" \
     -G ${REF_GTF} \

@@ -35,13 +35,17 @@ if USE_SIRV and not config.get('sirvome'):
 if USE_SIRV and not config.get('sirv_genedb'):
     raise ValueError("use_sirv enabled but sirv_genedb path not set in config")
 
+# Read Enable or Disable FastQ Screen contamination screening (default: True)
+USE_FASTQ_SCREEN = config.get('use_fastq_screen', True)
+if USE_FASTQ_SCREEN and not config.get('fastq_screen_conf'):
+    raise ValueError("use_fastq_screen enabled but fastq_screen_conf path not set in config")
+
 # Read assembly mode setting (default: quantification for reference transcript abundance)
 ASSEMBLY_MODE = config.get('assembly_mode', 'quantification')
 if ASSEMBLY_MODE not in ['discovery', 'quantification']:
     raise ValueError(f"assembly_mode must be 'discovery' or 'quantification', got: {ASSEMBLY_MODE}")
 
 samples = pd.read_csv(config.sample_file, header=None, sep=None, engine='python')
-#samples = pd.read_csv('basecalling_sample_sheet_jan_19.txt', header=None, sep=None, engine='python')
 
 sample_flowcell_pairs = [{"sample_id": row[0], "flowcell_id": row[1]} for row in samples.values]
 
@@ -74,13 +78,15 @@ if not SKIP_BASECALL:
             ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam',
             basecalling_qc_file = config.base_dir + config.qc_dir + '/basecalling_qc/{flowcell_id}_{sample_id}_cramino_qc.txt'
         resources:
-            runtime=4320, mem_mb=150000, gpu=1, gpu_model='a100', disk_mb=50000
+            runtime=120, mem_mb=15000, gpu=1, gpu_model='a100', disk_mb=50000
         threads: 30
         params:
             model = config.dorado_model,
             outdir = config.base_dir + config.ont_ubam + '/{sample_id}/'
         shell:
             """
+            module load dorado/1.2.0
+            module load nanopack/20231214
             scripts/basecalling.sh \
                 --infile {input.pod5} \
                 --outfile {output.ubam} \
@@ -109,9 +115,9 @@ rule trimming:
         min_length = config.minimum_read_length
     threads: 20
     resources:
-        runtime=4320, mem_mb=120000, disk_mb=50000
+        runtime=120, mem_mb=12000, disk_mb=50000
     singularity:
-        "./lrrna_1.0.sif"
+        "./lrrna_1.1.sif"
     shell: 
         """
         scripts/trimming.sh \
@@ -127,6 +133,32 @@ rule trimming:
             --threads {threads} 
         """
 
+if USE_FASTQ_SCREEN:
+    rule fastq_screen:
+        input:
+            fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq'
+        output:
+            txt = config.base_dir + config.qc_dir + '/fastq_screen/{sample_id}/{sample_id}_{flowcell_id}.trimmed_screen.txt',
+            html = config.base_dir + config.qc_dir + '/fastq_screen/{sample_id}/{sample_id}_{flowcell_id}.trimmed_screen.html'
+        params:
+            outdir = config.base_dir + config.qc_dir + '/fastq_screen/{sample_id}',
+            conf = config.fastq_screen_conf,
+            subset = config.get('fastq_screen_subset', 100000)
+        threads: 20
+        resources:
+            runtime=20, mem_mb=64000, disk_mb=20000
+        singularity:
+            "./lrrna_1.1.sif"
+        shell:
+            """
+            scripts/fastq_screen.sh \
+                --conf {params.conf} \
+                --subset {params.subset} \
+                --outdir {params.outdir} \
+                --threads {threads} \
+                --infile {input.fastq}
+            """
+
 rule alignment:
     input:  
         fastq = config.base_dir + config.pychopper_dir + '/{sample_id}/{sample_id}_{flowcell_id}.trimmed.fastq'
@@ -141,7 +173,7 @@ rule alignment:
         mosdepth_human_summary = config.base_dir + config.qc_dir + '/mapping_qc/mosdepth_human/{sample_id}_{flowcell_id}.mosdepth.summary.txt'
     threads: 20
     resources:
-        runtime=4320, mem_mb=200000, disk_mb=100000
+        runtime=120, mem_mb=20000, disk_mb=100000
     params:
         use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
@@ -150,7 +182,7 @@ rule alignment:
         sirv_fasta = config.get('sirvome', ''),
         sirv_flag = lambda wildcards: f"--sirvome {config.get('sirvome', '')}" if USE_SIRV else "--skip-sirv"
     singularity:
-        "./lrrna_1.0.sif"
+        "./lrrna_1.1.sif"
     shell: 
         """
         scripts/alignment.sh \
@@ -163,8 +195,9 @@ rule alignment:
             --mosdepth-sirv-prefix {output.mosdepth_sirv_summary} \
             --mosdepth-human-prefix {output.mosdepth_human_summary} \
             --genome {params.human_fasta} \
-            {params.sirv_flag} \
-            --threads {threads}
+            --threads {threads} \
+            {params.sirv_flag} 
+            
         """
 
 rule stringtie:
@@ -182,9 +215,9 @@ rule stringtie:
         human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/',
         assembly_mode = ASSEMBLY_MODE
     resources:
-        runtime=4320, mem_mb=120000, disk_mb=50000, slurm_partition='norm'
+        runtime=120, mem_mb=12000, disk_mb=50000, slurm_partition='norm'
     singularity:
-        "./lrrna_1.0.sif"
+        "./lrrna_1.1.sif"
     shell: 
         """
         """ + ("scripts/sirv_stringtie_assembly.sh \
@@ -208,6 +241,7 @@ rule isoquant:
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     output:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
+        human_isoquant_counts = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.discovered_transcript_counts.tsv',
     threads: 20
     params:
         use_sirv = USE_SIRV,
@@ -221,9 +255,9 @@ rule isoquant:
         human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/',
         assembly_mode = ASSEMBLY_MODE
     resources:
-        runtime=4320, mem_mb=120000, disk_mb=50000
+        runtime=120, mem_mb=120000, disk_mb=50000
     singularity:
-        "./lrrna_1.0.sif"
+        "./lrrna_1.1.sif"
     shell: 
         """
         """ + ("scripts/sirv_isoquant_assembly.sh \
@@ -246,6 +280,7 @@ rule isoquant:
 rule merge:
     input:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
+        human_isoquant_counts = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.discovered_transcript_counts.tsv',
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf',
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     threads: 20
@@ -255,17 +290,20 @@ rule merge:
         human_ref_gtf = config.human_genedb,
         tama_scripts = config.script_dir,
         merge_dir = config.base_dir + config.merge_dir + '/{sample_id}',
+        assembly_mode = ASSEMBLY_MODE,
+        scripts_dir = config.script_dir,
     resources:
-        runtime=4320, mem_mb=400000, disk_mb=100000
+        runtime=120, mem_mb=40000, disk_mb=100000
     output:
         annotated_gtf = config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
     singularity:
-        "./lrrna_1.0.sif"
+        "./lrrna_1.1.sif"
     shell: 
         """
         scripts/transcript_merge.sh \
             --input_bam {input.mapped_bam} \
             --isoquant_gtf {input.human_isoquant_gtf} \
+            --isoquant_counts {input.human_isoquant_counts} \
             --stringtie_gtf {input.human_stringtie_gtf} \
             --merge_dir {params.merge_dir} \
             --genome {params.human_fasta} \
@@ -273,6 +311,8 @@ rule merge:
             --prefix {params.prefix} \
             --outfile {output.annotated_gtf} \
             --tama_script_dir {params.tama_scripts} \
+            --assembly_mode {params.assembly_mode} \
+            --scripts_dir {params.scripts_dir} \
             --threads {threads}
         """
 
@@ -299,6 +339,12 @@ rule multiqc_report:
             sample_id = samples.iloc[:,0].tolist(),
             flowcell_id = samples.iloc[:,1].tolist()
         ),
+        fastq_screen = expand(
+            config.base_dir + config.qc_dir + '/fastq_screen/{sample_id}/{sample_id}_{flowcell_id}.trimmed_screen.txt',
+            zip,
+            sample_id = samples.iloc[:,0].tolist(),
+            flowcell_id = samples.iloc[:,1].tolist()
+        ) if USE_FASTQ_SCREEN else [],
         name = config.base_dir + config.qc_dir + '/multiqc_sample_names.tsv'
     output:
         report = config.base_dir + config.qc_dir + '/multiqc_report.html'
@@ -308,9 +354,9 @@ rule multiqc_report:
         multiqc_yaml = "config/multiqc_config.yaml"
     threads: 2
     resources:
-        runtime=4320, mem_mb=12000, disk_mb=5000
+        runtime=120, mem_mb=1200, disk_mb=5000
     singularity:
-        "./lrrna_1.0.sif"
+        "./lrrna_1.1.sif"
     shell:
         """
         multiqc {params.search_dir} \

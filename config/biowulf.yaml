@@ -14,7 +14,6 @@ use_sirv: true
 # You could change these directories as you see fit
 base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
 ont_ubam: 'snakemake_test/ONT_UBAM'
-dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
 pychopper_dir: 'snakemake_test/PYCHOPPER'
 mapping_dir: 'snakemake_test/MAPPED'
 assembly_dir: 'snakemake_test/ASSEMBLY/'
@@ -22,13 +21,21 @@ isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
 stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
 merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
 
+# Dorado configurations
+dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
+
 # Pychopper configuration
 pychopper_kit: 'PCS114'
 minimum_quality_score: 10
 minimum_read_length: 300
 
+# FastQ Screen contamination screening (runs after trimming, before alignment)
+use_fastq_screen: true
+fastq_screen_conf: 'config/fastq_screen_minimap2.conf'
+fastq_screen_subset: 100000  # number of reads to screen (0 = all reads)
+
 # Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
-assembly_mode: 'quantification'
+assembly_mode: 'discovery'
 
 #SIRV analysis directory (optional) if you use SIRV spike-ins
 #Directory where the SIRV Set4 excel file is located
@@ -52,3 +59,4 @@ sample_file: 'input_example.txt'
 # configurations for MultiQC steps (directories and configs)
 qc_dir: 'snakemake_test/QC'
 log_filesize_limit: 2000000000
+

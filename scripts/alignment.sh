@@ -128,33 +128,33 @@ if [ "$SKIP_SIRV" = "false" ]; then
         -b \
         "${OUTFILE%_human_mapped.sorted.bam}_SIRVome_mapped_unfiltered.sorted.bam" | samtools sort \
         -@ "${THREADS}" - \
-        > "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" || exit 1
+        > "${OUTFILE%_human_mapped.sorted.bam}_sample_unmapped.sorted.bam" || exit 1
 
     # index the bam, exit if it fails
-    samtools index "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" || exit 1
+    samtools index "${OUTFILE%_human_mapped.sorted.bam}_sample_unmapped.sorted.bam" || exit 1
 
     # convert unmapped human reads to fastq, exit if it fails
     samtools fastq \
         -T* \
         -@ "${THREADS}" \
         -n \
-        "${OUTFILE%_human_mapped.sorted.bam}_human_unmapped.sorted.bam" \
-        > "${INFILE%.trimmed.fastq}_human_unmapped.fastq" || exit 1
+        "${OUTFILE%_human_mapped.sorted.bam}_sample_unmapped.sorted.bam" \
+        > "${INFILE%.trimmed.fastq}_sample_unmapped.fastq" || exit 1
 
 
-    # Map human reads (SIRV-unmapped) to human genome (unfiltered for accurate QC stats)
+    # Align sample unmapped reads (SIRV-unmapped) to human genome (unfiltered for accurate QC stats)
     minimap2 \
         -t "${THREADS}" \
         -ax splice \
         "${GENOME}" \
-        "${INFILE%.trimmed.fastq}_human_unmapped.fastq" - \
+        "${INFILE%.trimmed.fastq}_sample_unmapped.fastq" - \
         | samtools view \
         -b - \
         | samtools sort \
         -@ "${THREADS}" - \
         > "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" || exit 1
 
-    # Index the human unfiltered mapped bam, exit if it fails
+    # Index the human mapped unfiltered bam, exit if it fails
     samtools index "${OUTFILE%_human_mapped.sorted.bam}_human_unfiltered.sorted.bam" || exit 1
 
     # Human QC stats (on unfiltered SIRV-depleted - shows % of SIRV-depleted reads that map to human)
