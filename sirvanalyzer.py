@@ -126,7 +126,7 @@ class SIRVAnalyzer:
             # Use polars logic to read and filter GTF
             gtf = read_gtf(gtf_file)
             features = gtf.filter(pl.col("feature") == "transcript")[
-                ["reference_id", "ref_gene_id", "FPKM"]
+                [transcript_id", "gene_id", "FPKM"]
             ]
             features.write_csv(output_file, separator="\t")
             self.count_files[output_file] = sample_id
@@ -150,12 +150,12 @@ class SIRVAnalyzer:
         # 2. Process Sample Files
         for f, sample_name in self.count_files.items():
             df_sample = pd.read_csv(f, sep='\t').dropna(
-                subset=['reference_id', 'ref_gene_id']
+                subset=[transcript_id', 'gene_id']
             )
             
             df_sample['merge_key'] = (
-                df_sample['reference_id'].astype(str) + "_" + 
-                df_sample['ref_gene_id'].astype(str)
+                df_sample[transcript_id'].astype(str) + "_" + 
+                df_sample['gene_id'].astype(str)
             )
             
             # Filter and Format
