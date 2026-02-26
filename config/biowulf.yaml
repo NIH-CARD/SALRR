@@ -39,7 +39,7 @@ assembly_mode: 'discovery'
 
 #SIRV analysis directory (optional) if you use SIRV spike-ins
 #Directory where the SIRV Set4 excel file is located
-data_dir: 'SIRV_Set4_Norm_sequence-design-overview_20210507a.xlsx'
+data_dir: './'
 
 # Path to the container image (optional)
 
