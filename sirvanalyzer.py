@@ -126,7 +126,7 @@ class SIRVAnalyzer:
             # Use polars logic to read and filter GTF
             gtf = read_gtf(gtf_file)
             features = gtf.filter(pl.col("feature") == "transcript")[
-                [transcript_id", "gene_id", "FPKM"]
+                ["transcript_id", "gene_id", "FPKM"]
             ]
             features.write_csv(output_file, separator="\t")
             self.count_files[output_file] = sample_id
