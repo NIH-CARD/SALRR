@@ -150,11 +150,11 @@ class SIRVAnalyzer:
         # 2. Process Sample Files
         for f, sample_name in self.count_files.items():
             df_sample = pd.read_csv(f, sep='\t').dropna(
-                subset=[transcript_id', 'gene_id']
+                subset=['transcript_id', 'gene_id']
             )
             
             df_sample['merge_key'] = (
-                df_sample[transcript_id'].astype(str) + "_" + 
+                df_sample['transcript_id'].astype(str) + "_" + 
                 df_sample['gene_id'].astype(str)
             )
             
