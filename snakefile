@@ -78,7 +78,7 @@ if not SKIP_BASECALL:
             ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam',
             basecalling_qc_file = config.base_dir + config.qc_dir + '/basecalling_qc/{flowcell_id}_{sample_id}_cramino_qc.txt'
         resources:
-            runtime=120, mem_mb=15000, gpu=1, gpu_model='a100', disk_mb=50000
+            runtime=120, mem_mb=15000, gpu=4, gpu_model='a100', disk_mb=50000
         threads: 30
         params:
             model = config.dorado_model,
