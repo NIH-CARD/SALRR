@@ -113,9 +113,9 @@ rule trimming:
         kit = config.pychopper_kit,
         min_q_score = config.minimum_quality_score,
         min_length = config.minimum_read_length
-    threads: 20
+    threads: 120
     resources:
-        runtime=120, mem_mb=12000, disk_mb=50000
+        runtime=720, mem_mb=120000, disk_mb=50000
     singularity:
         "./lrrna_1.1.sif"
     shell: 
@@ -144,9 +144,9 @@ if USE_FASTQ_SCREEN:
             outdir = config.base_dir + config.qc_dir + '/fastq_screen/{sample_id}',
             conf = config.fastq_screen_conf,
             subset = config.get('fastq_screen_subset', 100000)
-        threads: 20
+        threads: 120
         resources:
-            runtime=20, mem_mb=64000, disk_mb=20000
+            runtime=120, mem_mb=120000, disk_mb=50000
         singularity:
             "./lrrna_1.1.sif"
         shell:
@@ -171,9 +171,9 @@ rule alignment:
         human_stats = config.base_dir + config.qc_dir + '/mapping_qc/{sample_id}/{sample_id}_{flowcell_id}_human_stats.txt',
         cramino_human_stats = config.base_dir + config.qc_dir + '/mapping_qc/cramino_human_stats/{sample_id}_{flowcell_id}_cramino_qc.txt',
         mosdepth_human_summary = config.base_dir + config.qc_dir + '/mapping_qc/mosdepth_human/{sample_id}_{flowcell_id}.mosdepth.summary.txt'
-    threads: 20
+    threads: 120
     resources:
-        runtime=120, mem_mb=20000, disk_mb=100000
+        runtime=90, mem_mb=200000, disk_mb=100000
     params:
         use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
@@ -206,7 +206,7 @@ rule stringtie:
     output:
         sirv_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/sirv/{sample_id}_{flowcell_id}_sirv.stringtie.gtf' if USE_SIRV else [],
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf'
-    threads: 20
+    threads: 30
     params:
         use_sirv = USE_SIRV,
         human_ref_gtf = config.human_genedb,
@@ -215,7 +215,7 @@ rule stringtie:
         human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/',
         assembly_mode = ASSEMBLY_MODE
     resources:
-        runtime=120, mem_mb=12000, disk_mb=50000, slurm_partition='norm'
+        runtime=60, mem_mb=12000, disk_mb=50000, slurm_partition='norm'
     singularity:
         "./lrrna_1.1.sif"
     shell: 
@@ -242,7 +242,7 @@ rule isoquant:
     output:
         human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
         human_isoquant_counts = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.discovered_transcript_counts.tsv',
-    threads: 20
+    threads: 120
     params:
         use_sirv = USE_SIRV,
         prefix = '{sample_id}_{flowcell_id}',
@@ -255,7 +255,7 @@ rule isoquant:
         human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/',
         assembly_mode = ASSEMBLY_MODE
     resources:
-        runtime=120, mem_mb=120000, disk_mb=50000
+        runtime=420, mem_mb=120000, disk_mb=50000
     singularity:
         "./lrrna_1.1.sif"
     shell: 
@@ -283,7 +283,7 @@ rule merge:
         human_isoquant_counts = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.discovered_transcript_counts.tsv',
         human_stringtie_gtf = config.base_dir + config.stringtie_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf',
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
-    threads: 20
+    threads: 120
     params:
         prefix = '{sample_id}_{flowcell_id}',
         human_fasta = config.genome,
@@ -293,7 +293,7 @@ rule merge:
         assembly_mode = ASSEMBLY_MODE,
         scripts_dir = config.script_dir,
     resources:
-        runtime=120, mem_mb=40000, disk_mb=100000
+        runtime=480, mem_mb=400000, disk_mb=100000
     output:
         annotated_gtf = config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
     singularity:
@@ -354,7 +354,7 @@ rule multiqc_report:
         multiqc_yaml = "config/multiqc_config.yaml"
     threads: 2
     resources:
-        runtime=120, mem_mb=1200, disk_mb=5000
+        runtime=30, mem_mb=12000, disk_mb=5000
     singularity:
         "./lrrna_1.1.sif"
     shell:
