@@ -173,7 +173,7 @@ rule alignment:
         mosdepth_human_summary = config.base_dir + config.qc_dir + '/mapping_qc/mosdepth_human/{sample_id}_{flowcell_id}.mosdepth.summary.txt'
     threads: 120
     resources:
-        runtime=90, mem_mb=200000, disk_mb=100000
+        runtime=900, mem_mb=200000, disk_mb=100000
     params:
         use_sirv = USE_SIRV,
         mapped_dir = config.base_dir + config.mapping_dir + '/{sample_id}/',
