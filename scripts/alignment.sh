@@ -80,6 +80,7 @@ if [ "$SKIP_SIRV" = "false" ]; then
         -t "${THREADS}" \
         -ax splice \
         --splice-flank=no \
+        -y \
         "${SIRV_REF}" \
         "${INFILE}" - \
         | samtools view -b - \
@@ -146,6 +147,7 @@ if [ "$SKIP_SIRV" = "false" ]; then
     minimap2 \
         -t "${THREADS}" \
         -ax splice \
+        -y \
         "${GENOME}" \
         "${INFILE%.trimmed.fastq}_sample_unmapped.fastq" - \
         | samtools view \
@@ -211,6 +213,7 @@ else
     minimap2 \
         -t "${THREADS}" \
         -ax splice \
+        -y \
         "${GENOME}" \
         "${INFILE}" - \
         | samtools view \
