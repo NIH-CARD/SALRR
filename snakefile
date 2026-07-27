@@ -300,7 +300,7 @@ rule merge:
         "./lrrna_1.1.sif"
     shell: 
         """
-        scripts/transcript_merge.sh \
+        scripts/transcript_merge_isomatch.sh \
             --input_bam {input.mapped_bam} \
             --isoquant_gtf {input.human_isoquant_gtf} \
             --isoquant_counts {input.human_isoquant_counts} \
