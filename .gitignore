@@ -9,3 +9,5 @@ lrrna_1.1.sif
 lrrna_1.2.sif
 build.log
 .config/IsoQuant/
+singularity.def
+requirement.yml
