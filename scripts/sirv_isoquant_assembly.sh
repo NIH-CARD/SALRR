@@ -40,7 +40,7 @@ mkdir -p "${OUTDIR}"
 
 # Run Isoquant on SIRV for quantification only
 
-isoquant.py \
+isoquant \
     -t "${THREADS}" \
     --reference ${SIRVOME} \
     --genedb ${GENEDB} \

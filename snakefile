@@ -117,7 +117,7 @@ rule trimming:
     resources:
         runtime=720, mem_mb=120000, disk_mb=50000
     singularity:
-        "./lrrna_1.1.sif"
+        "./lrrna_1.2.sif"
     shell: 
         """
         scripts/trimming.sh \
@@ -148,7 +148,7 @@ if USE_FASTQ_SCREEN:
         resources:
             runtime=120, mem_mb=120000, disk_mb=50000
         singularity:
-            "./lrrna_1.1.sif"
+            "./lrrna_1.2.sif"
         shell:
             """
             scripts/fastq_screen.sh \
@@ -182,7 +182,7 @@ rule alignment:
         sirv_fasta = config.get('sirvome', ''),
         sirv_flag = lambda wildcards: f"--sirvome {config.get('sirvome', '')}" if USE_SIRV else "--skip-sirv"
     singularity:
-        "./lrrna_1.1.sif"
+        "./lrrna_1.2.sif"
     shell: 
         """
         scripts/alignment.sh \
@@ -217,7 +217,7 @@ rule stringtie:
     resources:
         runtime=60, mem_mb=12000, disk_mb=50000, slurm_partition='norm'
     singularity:
-        "./lrrna_1.1.sif"
+        "./lrrna_1.2.sif"
     shell: 
         """
         """ + ("scripts/sirv_stringtie_assembly.sh \
@@ -257,7 +257,7 @@ rule isoquant:
     resources:
         runtime=420, mem_mb=120000, disk_mb=50000
     singularity:
-        "./lrrna_1.1.sif"
+        "./lrrna_1.2.sif"
     shell: 
         """
         """ + ("scripts/sirv_isoquant_assembly.sh \
@@ -288,7 +288,6 @@ rule merge:
         prefix = '{sample_id}_{flowcell_id}',
         human_fasta = config.genome,
         human_ref_gtf = config.human_genedb,
-        tama_scripts = config.script_dir,
         merge_dir = config.base_dir + config.merge_dir + '/{sample_id}',
         assembly_mode = ASSEMBLY_MODE,
         scripts_dir = config.script_dir,
@@ -297,10 +296,10 @@ rule merge:
     output:
         annotated_gtf = config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
     singularity:
-        "./lrrna_1.1.sif"
+        "./lrrna_1.2.sif"
     shell: 
         """
-        scripts/transcript_merge_isomatch.sh \
+        scripts/transcript_merge.sh \
             --input_bam {input.mapped_bam} \
             --isoquant_gtf {input.human_isoquant_gtf} \
             --isoquant_counts {input.human_isoquant_counts} \
@@ -310,7 +309,6 @@ rule merge:
             --ref_gtf {params.human_ref_gtf} \
             --prefix {params.prefix} \
             --outfile {output.annotated_gtf} \
-            --tama_script_dir {params.tama_scripts} \
             --assembly_mode {params.assembly_mode} \
             --scripts_dir {params.scripts_dir} \
             --threads {threads}
@@ -356,7 +354,7 @@ rule multiqc_report:
     resources:
         runtime=30, mem_mb=12000, disk_mb=5000
     singularity:
-        "./lrrna_1.1.sif"
+        "./lrrna_1.2.sif"
     shell:
         """
         multiqc {params.search_dir} \

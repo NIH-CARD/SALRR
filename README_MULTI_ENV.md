@@ -226,7 +226,7 @@ Pre-basecalled BAM or basecall output
     ↓
 [isoquant] — Assemble transcripts using IsoQuant → GTF
     ↓
-[merge] — Merge StringTie + IsoQuant using TAMA → final GTF
+[merge] — Merge StringTie + IsoQuant using IsoMatch → final GTF
     ↓
 snakemake/ASSEMBLY/MERGED/{sample_id}/*.annotated.gtf
 ```
@@ -505,5 +505,4 @@ For issues or questions:
 - **Minimap2**: https://github.com/lh3/minimap2
 - **StringTie**: https://github.com/gpertea/stringtie
 - **IsoQuant**: https://ablab.github.io/IsoQuant/
-- **TAMA**: https://github.com/GenomeRIK/tama
-- **gffcompare**: https://github.com/gpertea/gffcompare
+- **IsoMatch**: bundled in the pipeline container

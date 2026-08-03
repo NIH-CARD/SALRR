@@ -46,7 +46,7 @@ if [ "$MODE" = "quantification" ]; then
 fi
 
 # Run Isoquant 
-isoquant.py \
+isoquant \
     -t "${THREADS}" \
     --reference ${GENOME} \
     --genedb ${GENEDB} \

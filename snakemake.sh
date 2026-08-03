@@ -31,7 +31,7 @@ case "$PROFILE" in
     biowulf)
         # Load required modules for Biowulf
         module purge
-        module load singularity/4.2.2 snakemake/7.32.4
+        module load singularity/4.3.7 snakemake/7.32.4
         
         # Load Biowulf-specific singularity bindings if they exist
         if [ -f /usr/local/current/singularity/app_conf/sing_binds ]; then
@@ -61,9 +61,9 @@ case "$PROFILE" in
 esac
 
 # Ensure container exists (Standard across all profiles)
-if [[ ! -f "lrrna_1.1.sif" ]]; then
+if [[ ! -f "lrrna_1.2.sif" ]]; then
     echo "Container image not found. Downloading..."
-    singularity pull oras://quay.io/datatecnica/lrrna:1.1
+    singularity pull oras://quay.io/datatecnica/lrrna:1.2
 fi
 
 ################################################################################

@@ -1,8 +1,0 @@
-name: lrrna
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - python=3.10
-  - snakemake=7.32.4
-  - singularity>=4.0
