@@ -1,5 +1,5 @@
-BootStrap: library
-From: ubuntu:22.04
+BootStrap: docker
+From: ubuntu:24.04
 
 %environment
     export LC_ALL=en_US.utf-8
@@ -8,8 +8,8 @@ From: ubuntu:22.04
     # Set BASH_ENV which points to init file loaded during non-interactive shell
     export BASH_ENV=/opt/etc/bashrc
     export PATH="/opt/mamba/bin:$PATH"
-    # Force loading of copied bashrc for interactive shell
-    source /opt/etc/bashrc
+    # POSIX-compatible sourcing (dash on ubuntu:24.04 does not accept `source`)
+    . /opt/etc/bashrc
 
 %post
     # Create target dir for non-root-accessible bashrc
@@ -35,7 +35,7 @@ From: ubuntu:22.04
     # Create environment using mamba
     ENVNAME="lrrna"
     mamba create -y -n ${ENVNAME} 
-    mamba install samtools pychopper  minimap2 isoquant stringtie gffcompare multiqc mosdepth nanopack rseqc bedtools rustqc -c bioconda
+    mamba install -n ${ENVNAME} samtools pychopper  minimap2 isoquant stringtie gffcompare multiqc mosdepth nanopack rseqc bedtools rustqc -c bioconda
 
     # Install IsoMatch v0.6.1 (Rust binary from GitHub releases)
     ISOMATCH_VERSION="0.6.1"
@@ -44,7 +44,7 @@ From: ubuntu:22.04
     mkdir -p /opt/isomatch
     wget -O /tmp/isomatch.tar.gz "${ISOMATCH_URL}"
     echo "${ISOMATCH_SHA256}  /tmp/isomatch.tar.gz" | sha256sum -c -
-    tar -xzf /tmp/isomatch.tar.gz -C /opt/isomatch --strip-components=1
+    tar -xzf /tmp/isomatch.tar.gz -C /opt/isomatch
     chmod +x /opt/isomatch/isomatch
     rm /tmp/isomatch.tar.gz
     ln -s /opt/isomatch/isomatch /usr/local/bin/isomatch

@@ -91,7 +91,7 @@ if [ "${ASSEMBLY_MODE}" = "discovery" ]; then
         --prefix ${PREFIX}_stringtie_requant \
         -o ${ISOQUANT_ON_STRINGTIE_DIR} || exit 1
 
-    # Locate the IsoQuant-on-StringTie outputs
+    # Locate the IsoQuant-on-StringTie transcript counts file
     ISOQUANT_ON_ST_COUNTS="${ISOQUANT_ON_STRINGTIE_DIR}/${PREFIX}_stringtie_requant/${PREFIX}_stringtie_requant.transcript_counts.tsv"
     
     
@@ -111,7 +111,7 @@ if [ "${ASSEMBLY_MODE}" = "discovery" ]; then
 
     # --- Step 4: Filter IsoQuant-on-StringTie arm (#2) by CPM > 1 ---
     echo "Step 4: Filtering IsoQuant-on-StringTie arm by CPM > 1..."
-    ####Change Isoquant_onST_gtf
+    #### filter Isoquant_onST_gtf
     STRINGTIE_CPM_FILTERED_GTF="${MERGE_DIR}/${PREFIX}_stringtie_cpm_filtered.gtf"
     python ${SCRIPTS_DIR}/filter_transcripts_by_cpm.py \
         --counts ${ISOQUANT_ON_ST_COUNTS} \

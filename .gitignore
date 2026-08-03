@@ -5,3 +5,5 @@ snakemake/*
 slurm-*.out
 dag.pdf
 lrrna_1.1.sif
+lrrna_1.2.sif
+build.log
