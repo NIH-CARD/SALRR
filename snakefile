@@ -78,7 +78,7 @@ if not SKIP_BASECALL:
             ubam = config.base_dir + config.ont_ubam + '/{sample_id}/{sample_id}_{flowcell_id}.bam',
             basecalling_qc_file = config.base_dir + config.qc_dir + '/basecalling_qc/{flowcell_id}_{sample_id}_cramino_qc.txt'
         resources:
-            runtime=120, mem_mb=15000, gpu=4, gpu_model='a100', disk_mb=50000
+            runtime=1440, mem_mb=150000, gpu=4, gpu_model='a100', disk_mb=50000
         threads: 30
         params:
             model = config.dorado_model,
@@ -115,7 +115,7 @@ rule trimming:
         min_length = config.minimum_read_length
     threads: 120
     resources:
-        runtime=720, mem_mb=120000, disk_mb=50000
+        runtime=1440, mem_mb=120000, disk_mb=50000
     singularity:
         "./lrrna_1.2.sif"
     shell: 
@@ -215,7 +215,7 @@ rule stringtie:
         human_stringtie_dir = config.base_dir + config.stringtie_dir + '/{sample_id}/',
         assembly_mode = ASSEMBLY_MODE
     resources:
-        runtime=60, mem_mb=12000, disk_mb=50000, slurm_partition='norm'
+        runtime=120, mem_mb=12000, disk_mb=50000, slurm_partition='norm'
     singularity:
         "./lrrna_1.2.sif"
     shell: 
@@ -255,7 +255,7 @@ rule isoquant:
         human_isoquant_dir = config.base_dir + config.isoquant_dir + '/{sample_id}/',
         assembly_mode = ASSEMBLY_MODE
     resources:
-        runtime=420, mem_mb=120000, disk_mb=50000
+        runtime=4320, mem_mb=120000, disk_mb=50000
     singularity:
         "./lrrna_1.2.sif"
     shell: 
