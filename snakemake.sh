@@ -78,9 +78,10 @@ echo "Starting Snakemake pipeline with profile: $PROFILE"
 # Run Snakemake
 # We load default config
 
+# --configfile (not --config profile=) so a user's --config can only extend it, never overwrite the profile selection
 snakemake \
     --profile ./snakemake_profiles/$PROFILE \
-    --config profile=$PROFILE \
+    --configfile config/$PROFILE.yaml \
     "$@"
 
 # Exit with the same code as Snakemake (0 = success, 1 = error)

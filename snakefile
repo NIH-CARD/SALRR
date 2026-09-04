@@ -40,10 +40,24 @@ USE_FASTQ_SCREEN = config.get('use_fastq_screen', True)
 if USE_FASTQ_SCREEN and not config.get('fastq_screen_conf'):
     raise ValueError("use_fastq_screen enabled but fastq_screen_conf path not set in config")
 
-# Read assembly mode setting (default: quantification for reference transcript abundance)
+# Transcriptome assembly mode setting (default: quantification for reference transcript abundance)
 ASSEMBLY_MODE = config.get('assembly_mode', 'quantification')
 if ASSEMBLY_MODE not in ['discovery', 'quantification']:
     raise ValueError(f"assembly_mode must be 'discovery' or 'quantification', got: {ASSEMBLY_MODE}")
+
+
+# Cross-sample cohort merge (default: off). When on, adds the cohort matrices as final targets.
+USE_CROSS_SAMPLE_MERGE = str(config.get('use_cross_sample_merge', False)).lower() in ('true', '1', 'yes')
+
+COHORT_MATRICES = expand(
+    config.base_dir + config.cohort_dir + '/matrix/{matrix}',
+    matrix=[
+        'transcript_counts_matrix.tsv',
+        'transcript_tpm_matrix.tsv',
+        'gene_counts_matrix.tsv',
+        'gene_tpm_matrix.tsv',
+    ]
+) if USE_CROSS_SAMPLE_MERGE else []
 
 samples = pd.read_csv(config.sample_file, header=None, sep=None, engine='python')
 
@@ -67,7 +81,9 @@ rule all:
             flowcell_id = samples.iloc[:,1].tolist()
         ),
         # Adding MultiQC report as a target to run after all samples are processed
-        config.base_dir + config.qc_dir + '/multiqc_report.html'
+        config.base_dir + config.qc_dir + '/multiqc_report.html',
+        # Merged transcripts across cohort samples after MultiQC
+        COHORT_MATRICES
 
 # Basecalling rule only runs on Biowulf (skip_basecall: false)
 if not SKIP_BASECALL:
@@ -363,4 +379,67 @@ rule multiqc_report:
             --replace-names {input.name} \
             --config {params.multiqc_yaml} \
             --force \
+        """
+
+
+rule cohort_manifest:
+    output:
+        manifest = config.base_dir + config.cohort_dir + '/cohort_manifest.tsv'
+    run:
+        os.makedirs(os.path.dirname(output.manifest), exist_ok=True)
+        with open(output.manifest, 'w') as fh:
+            for sample_id, flowcell_id in zip(all_sample_names, all_flowcell_ids):
+                annotated_gtf = config.base_dir + config.merge_dir + f'/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf'
+                human_mapped_bam = config.base_dir + config.mapping_dir + f'/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
+                fh.write(f"{sample_id}\t{annotated_gtf}\t{human_mapped_bam}\n")
+
+
+rule cohort_merge:
+    input:
+        manifest = config.base_dir + config.cohort_dir + '/cohort_manifest.tsv',
+        annotated_gtfs = expand(
+            config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf',
+            zip,
+            sample_id   = all_sample_names,
+            flowcell_id = all_flowcell_ids
+        ),
+        bams = expand(
+            config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam',
+            zip,
+            sample_id   = all_sample_names,
+            flowcell_id = all_flowcell_ids
+        )
+    output:
+        matrices = expand(
+            config.base_dir + config.cohort_dir + '/matrix/{matrix}',
+            matrix=[
+                'transcript_counts_matrix.tsv',
+                'transcript_tpm_matrix.tsv',
+                'gene_counts_matrix.tsv',
+                'gene_tpm_matrix.tsv',
+            ]
+        ),
+        cohort_gtf = config.base_dir + config.cohort_dir + '/gtf/' + config.cohort_name + '.annotated.gtf',
+        work = temp(directory(config.base_dir + config.cohort_dir + '/work'))
+    params:
+        cohort_dir  = config.base_dir + config.cohort_dir,
+        cohort_name = config.cohort_name,
+        genome      = config.genome,
+        ref_gtf     = config.human_genedb,
+        script_dir  = config.script_dir
+    threads: 120
+    resources:
+        runtime=960, mem_mb=400000, disk_mb=100000
+    singularity:
+        "./lrrna_1.2.sif"
+    shell:
+        """
+        scripts/cohort_merge.sh \
+            --manifest {input.manifest} \
+            --cohort_dir {params.cohort_dir} \
+            --cohort_name {params.cohort_name} \
+            --genome {params.genome} \
+            --ref_gtf {params.ref_gtf} \
+            --script_dir {params.script_dir} \
+            --threads {threads}
         """

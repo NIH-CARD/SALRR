@@ -32,6 +32,14 @@
 # stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
 # merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
 
+# # Cross-sample (cohort) merge: consolidate all per-sample annotated GTFs into one
+# # unified GTF with IsoMatch, then re-quantify every sample against it with IsoQuant.
+# # Opt-in: leave false to end the pipeline at the per-sample annotated GTF.
+# use_cross_sample_merge: false
+# cohort_dir: 'snakemake_test/ASSEMBLY/COHORT'
+# cohort_name: 'cohort'
+
+
 # Reference genome paths for your HPC system
 # Replace these with paths available on your cluster
 # Ask your HPC admin for the location of:
@@ -52,7 +60,6 @@
 # human_genedb: '/path/to/your/gencode.v43.annotation.gtf'
 # sirvome: '/path/to/your/SIRV_multi-fasta.fasta'
 # sirv_genedb: '/path/to/your/SIRV_genedb.gtf'
-# sirv_ref_gtf: '/path/to/your/SIRV_ref.gtf'
 
 # # Dorado configurations
 # dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
