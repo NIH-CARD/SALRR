@@ -66,6 +66,8 @@ sample_flowcell_pairs = [{"sample_id": row[0], "flowcell_id": row[1]} for row in
 all_sample_names = samples.iloc[:,0].tolist()
 all_flowcell_ids = samples.iloc[:,1].tolist()
 
+SAMPLE_TO_FLOWCELL = dict(zip(all_sample_names, all_flowcell_ids))
+
 # this `all` rule defines the final outputs at the very end of the workflow that need to be produced.
 # Snakemake will then start thinking backwards to determine which rules are necessary
 # to generate those final outputs.
@@ -394,7 +396,7 @@ rule cohort_manifest:
                 fh.write(f"{sample_id}\t{annotated_gtf}\t{human_mapped_bam}\n")
 
 
-rule cohort_merge:
+rule cohort_index_merge:
     input:
         manifest = config.base_dir + config.cohort_dir + '/cohort_manifest.tsv',
         annotated_gtfs = expand(
@@ -402,12 +404,65 @@ rule cohort_merge:
             zip,
             sample_id   = all_sample_names,
             flowcell_id = all_flowcell_ids
-        ),
-        bams = expand(
-            config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam',
-            zip,
-            sample_id   = all_sample_names,
-            flowcell_id = all_flowcell_ids
+        )
+    output:
+        cohort_gtf = config.base_dir + config.cohort_dir + '/gtf/' + config.cohort_name + '.annotated.gtf',
+        work = temp(directory(config.base_dir + config.cohort_dir + '/work'))
+    params:
+        cohort_dir  = config.base_dir + config.cohort_dir,
+        cohort_name = config.cohort_name,
+        genome      = config.genome,
+        ref_gtf     = config.human_genedb,
+    threads: 32
+    resources:
+        runtime=480, mem_mb=400000, disk_mb=100000
+    singularity:
+        "./lrrna_1.2.sif"
+    shell:
+        """
+        scripts/cohort_index_merge.sh \
+            --manifest {input.manifest} \
+            --cohort_dir {params.cohort_dir} \
+            --cohort_name {params.cohort_name} \
+            --genome {params.genome} \
+            --ref_gtf {params.ref_gtf}
+        """
+
+rule cohort_requant:
+    input:
+        cohort_gtf = config.base_dir + config.cohort_dir + '/gtf/' + config.cohort_name + '.annotated.gtf',
+        bam = lambda wc: config.base_dir + config.mapping_dir + f'/{wc.sample_id}/{wc.sample_id}_{SAMPLE_TO_FLOWCELL[wc.sample_id]}_human_mapped.sorted.bam'
+    output:
+        transcript_counts = config.base_dir + config.cohort_dir + '/quant/{sample_id}/{sample_id}.transcript_counts.tsv',
+        transcript_tpm    = config.base_dir + config.cohort_dir + '/quant/{sample_id}/{sample_id}.transcript_tpm.tsv',
+        gene_counts       = config.base_dir + config.cohort_dir + '/quant/{sample_id}/{sample_id}.gene_counts.tsv',
+        gene_tpm          = config.base_dir + config.cohort_dir + '/quant/{sample_id}/{sample_id}.gene_tpm.tsv'
+    params:
+        sample_id = '{sample_id}',
+        genome    = config.genome,
+        quant_dir = config.base_dir + config.cohort_dir + '/quant'
+    threads: 120
+    resources:
+        runtime=960, mem_mb=120000, disk_mb=100000
+    singularity:
+        "./lrrna_1.2.sif"
+    shell:
+        """
+        scripts/cohort_requant.sh \
+            --bam {input.bam} \
+            --sample_id {params.sample_id} \
+            --cohort_gtf {input.cohort_gtf} \
+            --genome {params.genome} \
+            --quant_dir {params.quant_dir} \
+            --threads {threads}
+        """
+
+rule cohort_aggregate:
+    input:
+        quant = expand(
+            config.base_dir + config.cohort_dir + '/quant/{sample_id}/{sample_id}.{file_type}.tsv',
+            sample_id = all_sample_names,
+            file_type = ['transcript_counts', 'transcript_tpm', 'gene_counts', 'gene_tpm']
         )
     output:
         matrices = expand(
@@ -418,28 +473,18 @@ rule cohort_merge:
                 'gene_counts_matrix.tsv',
                 'gene_tpm_matrix.tsv',
             ]
-        ),
-        cohort_gtf = config.base_dir + config.cohort_dir + '/gtf/' + config.cohort_name + '.annotated.gtf',
-        work = temp(directory(config.base_dir + config.cohort_dir + '/work'))
+        )
     params:
-        cohort_dir  = config.base_dir + config.cohort_dir,
-        cohort_name = config.cohort_name,
-        genome      = config.genome,
-        ref_gtf     = config.human_genedb,
-        script_dir  = config.script_dir
-    threads: 120
+        quant_dir  = config.base_dir + config.cohort_dir + '/quant',
+        matrix_dir = config.base_dir + config.cohort_dir + '/matrix'
+    threads: 2
     resources:
-        runtime=960, mem_mb=400000, disk_mb=100000
+        runtime=60, mem_mb=32000, disk_mb=10000
     singularity:
         "./lrrna_1.2.sif"
     shell:
         """
-        scripts/cohort_merge.sh \
-            --manifest {input.manifest} \
-            --cohort_dir {params.cohort_dir} \
-            --cohort_name {params.cohort_name} \
-            --genome {params.genome} \
-            --ref_gtf {params.ref_gtf} \
-            --script_dir {params.script_dir} \
-            --threads {threads}
+        python scripts/aggregate_cohort_counts.py \
+            --quant-dir {params.quant_dir} \
+            --matrix-dir {params.matrix_dir}
         """

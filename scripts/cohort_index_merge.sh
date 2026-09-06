@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Cross-sample cohort merge:
-# isomatch merge from (Stringtie/Isoquant) per sample annotated gtf to one cohort gtf
-# IsoQuant re-quant of every sample BAM against the cohort unified gtf
-# Aggregate per-sample counts/TPM into cohort matrices
+# Build one unified cohort GTF from per-sample annotated GTF files with IsoMatch.
 
 usage_error () { echo >&2 "$(basename $0):  $1"; exit 2; }
 assert_argument () { test "$1" != "$EOL" || usage_error "$2 requires an argument"; }
@@ -17,14 +14,12 @@ if [ "$#" != 0 ]; then
 
               # Command line options below
               # matrix table 3-column tsv sample id | annotated gtf path | bam path all tab separated
-              --manifest)       assert_argument "$1" "$opt"; MANIFEST="$1"; shift ;;
+              --manifest)       assert_argument "$1" "$opt"; MANIFEST="$1"; shift ;; 
               # Single values
               --cohort_dir)     assert_argument "$1" "$opt"; COHORT_DIR="$1"; shift ;;
               --cohort_name)    assert_argument "$1" "$opt"; COHORT_NAME="$1"; shift ;;
               --genome)         assert_argument "$1" "$opt"; GENOME="$1"; shift ;;
               --ref_gtf)        assert_argument "$1" "$opt"; REF_GTF="$1"; shift ;;
-              --script_dir)     assert_argument "$1" "$opt"; SCRIPT_DIR="$1"; shift ;;
-              --threads)        assert_argument "$1" "$opt"; THREADS="$1"; shift ;;
 
               # Arguments processing. You may remove any unneeded line after the 1st.
               -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
@@ -44,11 +39,9 @@ fi
 # Derived layout
 COHORT_GTF_DIR="${COHORT_DIR}/gtf"
 COHORT_WORK_DIR="${COHORT_DIR}/work"
-COHORT_QUANT_DIR="${COHORT_DIR}/quant"
-COHORT_MATRIX_DIR="${COHORT_DIR}/matrix"
 COHORT_GTF="${COHORT_GTF_DIR}/${COHORT_NAME}.annotated.gtf"
 
-mkdir -p "${COHORT_GTF_DIR}" "${COHORT_WORK_DIR}" "${COHORT_QUANT_DIR}" "${COHORT_MATRIX_DIR}"
+mkdir -p "${COHORT_GTF_DIR}" "${COHORT_WORK_DIR}"
 
 ###############################################################################
 # isomatch cross-sample merge
@@ -85,36 +78,3 @@ isomatch classify \
 
 # Decompress the annotated cohort GTF to the final plain-text deliverable.
 zcat "${COHORT_CLASSIFY_PREFIX}.annotated.gtf.gz" > "${COHORT_GTF}"
-
-###############################################################################
-# IsoQuant re-quantification against the cohort GTF
-#   Counting every sample's reads against the single unified cohort model so all
-#   samples are quantified on the same reference (comparable across the cohort).
-###############################################################################
-
-while IFS=$'\t' read -r sample_id annotated_gtf human_mapped_bam; do
-    [ -z "${sample_id}" ] && continue          # skip blank lines
-    [ -s "${human_mapped_bam}" ] || { echo "ERROR: missing BAM for ${sample_id}: ${human_mapped_bam} (needed for re-quant)" >&2; exit 1; }
-
-    isoquant \
-        -t "${THREADS}" \
-        --reference "${GENOME}" \
-        --genedb "${COHORT_GTF}" \
-        --transcript_quantification unique_only \
-        --gene_quantification unique_splicing_consistent \
-        --no_model_construction \
-        --data_type nanopore \
-        --count_exons \
-        --bam "${human_mapped_bam}" \
-        --prefix "${sample_id}" \
-        -o "${COHORT_QUANT_DIR}"
-done < "${MANIFEST}"
-
-###############################################################################
-# Aggregate per-sample IsoQuant outputs into cohort-wide matrices
-#   transcript/gene counts + TPM matrices (rows = feature_id, one column per sample).
-###############################################################################
-
-python "${SCRIPT_DIR}/aggregate_cohort_counts.py" \
-    --quant-dir "${COHORT_QUANT_DIR}" \
-    --matrix-dir "${COHORT_MATRIX_DIR}"
