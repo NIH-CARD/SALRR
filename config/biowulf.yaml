@@ -24,7 +24,7 @@ merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
 # Cross-sample (cohort) merge: consolidate all per-sample annotated GTFs into one
 # unified GTF with IsoMatch, then re-quantify every sample against it with IsoQuant.
 # Opt-in: leave false to end the pipeline at the per-sample annotated GTF.
-use_cross_sample_merge: True
+use_cross_sample_merge: false
 cohort_dir: 'snakemake_test/ASSEMBLY/COHORT'
 cohort_name: 'NABEC'
 

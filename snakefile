@@ -57,7 +57,7 @@ COHORT_MATRICES = expand(
         'gene_counts_matrix.tsv',
         'gene_tpm_matrix.tsv',
     ]
-) if USE_CROSS_SAMPLE_MERGE else []
+) if USE_CROSS_SAMPLE_MERGE and ASSEMBLY_MODE == 'discovery' else []
 
 samples = pd.read_csv(config.sample_file, header=None, sep=None, engine='python')
 
@@ -68,20 +68,41 @@ all_flowcell_ids = samples.iloc[:,1].tolist()
 
 SAMPLE_TO_FLOWCELL = dict(zip(all_sample_names, all_flowcell_ids))
 
+
+# this section determines the final outputs for each sample based on the assembly mode
+if ASSEMBLY_MODE == 'discovery':
+    FINAL_SAMPLE_OUTPUTS = expand(
+        config.base_dir + config.merge_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf',
+        zip, # ensure pairing of sample_id and flowcell_id from each line
+        sample_id=samples.iloc[:, 0].tolist(),
+        flowcell_id=samples.iloc[:, 1].tolist()
+    )
+else:
+    FINAL_SAMPLE_OUTPUTS = expand(
+        config.base_dir + config.isoquant_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}/'
+        + '{sample_id}_{flowcell_id}.transcript_counts.tsv',
+        zip,
+        sample_id=samples.iloc[:, 0].tolist(),
+        flowcell_id=samples.iloc[:, 1].tolist()
+    )
+
+    FINAL_SAMPLE_OUTPUTS += expand(
+        config.base_dir + config.stringtie_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}_human.stringtie.gtf',
+        zip,
+        sample_id=samples.iloc[:, 0].tolist(),
+        flowcell_id=samples.iloc[:, 1].tolist()
+    )
+
 # this `all` rule defines the final outputs at the very end of the workflow that need to be produced.
 # Snakemake will then start thinking backwards to determine which rules are necessary
 # to generate those final outputs.
 
-
-
 rule all:
     input:
-        expand(
-            config.base_dir + config.merge_dir + '/{sample_id}/{sample_id}_{flowcell_id}.annotated.gtf',
-            zip,  # ensure pairing of sample_id and flowcell_id from each line
-            sample_id   = samples.iloc[:,0].tolist(),
-            flowcell_id = samples.iloc[:,1].tolist()
-        ),
+        FINAL_SAMPLE_OUTPUTS,
         # Adding MultiQC report as a target to run after all samples are processed
         config.base_dir + config.qc_dir + '/multiqc_report.html',
         # Merged transcripts across cohort samples after MultiQC
@@ -258,8 +279,20 @@ rule isoquant:
     input:  
         mapped_bam = config.base_dir + config.mapping_dir + '/{sample_id}/{sample_id}_{flowcell_id}_human_mapped.sorted.bam'
     output:
-        human_isoquant_gtf = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf',
-        human_isoquant_counts = config.base_dir + config.isoquant_dir + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.discovered_transcript_counts.tsv',
+        human_isoquant_gtf = (
+        config.base_dir + config.isoquant_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_models.gtf'
+        if ASSEMBLY_MODE == 'discovery' else []),
+        human_isoquant_counts = (
+        config.base_dir + config.isoquant_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.discovered_transcript_counts.tsv'
+        if ASSEMBLY_MODE == 'discovery'
+        else config.base_dir + config.isoquant_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.transcript_counts.tsv'),
+        human_isoquant_gene_counts = (
+        config.base_dir + config.isoquant_dir
+        + '/{sample_id}/{sample_id}_{flowcell_id}/{sample_id}_{flowcell_id}.gene_counts.tsv'
+        if ASSEMBLY_MODE == 'quantification' else []),
     threads: 120
     params:
         use_sirv = USE_SIRV,
