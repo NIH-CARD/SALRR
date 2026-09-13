@@ -123,6 +123,21 @@ POD5 files are expected under:
 {sample_id}/{sample_id}/{flowcell_id}/pod5/
 ```
 
+For example:
+
+```text
+/NABEC_RNA/NABEC_KEN-1069_FTX_RNA
+└── NABEC_KEN-1069_FTX_RNA
+  └── 20250114_2319_2A_PAW72725_5119b730
+    ├── fastq_fail
+    ├── fastq_pass
+    ├── other_reports
+    └── pod5
+```
+
+The pipeline uses the sample ID, flowcell ID, and `pod5` directory at the
+flowcell level to locate the input data.
+
 ### Generic HPC / Local (pre-basecalled BAM)
 
 Unaligned BAM files are expected under:
