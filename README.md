@@ -51,23 +51,23 @@ oras://quay.io/datatecnica/lrrna:1.2  ->  lrrna_1.2.sif
 
 Processing:
 
-- [Dorado](https://github.com/nanoporetech/dorado) — basecalling (Biowulf only)
-- [Pychopper](https://github.com/nanoporetech/pychopper) — read trimming, rescue, and orientation
-- [Minimap2](https://github.com/lh3/minimap2) — alignment
-- [StringTie](https://github.com/gpertea/stringtie) — transcript assembly
-- [IsoQuant](https://ablab.github.io/IsoQuant/index.html) — assembly and quantification
-- **IsoMatch** — assembly merging and reannotation
-- [gffcompare](https://github.com/gpertea/gffcompare) — transcript comparison
+- [Dorado](https://github.com/nanoporetech/dorado): basecalling (Biowulf only)
+- [Pychopper](https://github.com/nanoporetech/pychopper): read trimming, rescue, and orientation
+- [Minimap2](https://github.com/lh3/minimap2): alignment
+- [StringTie](https://github.com/gpertea/stringtie): transcript assembly
+- [IsoQuant](https://ablab.github.io/IsoQuant/index.html): assembly and quantification
+- **IsoMatch**: assembly merging and reannotation
+- [gffcompare](https://github.com/gpertea/gffcompare): transcript comparison
 
 Quality control and reporting:
 
-- [FastQ Screen](https://www.bioinformatics.babraham.ac.uk/projects/fastq_screen/) — contamination screening
-- [samtools](https://www.htslib.org/) / [mosdepth](https://github.com/brentp/mosdepth) — alignment and coverage stats
-- [cramino (nanopack)](https://github.com/wdecoster/nanopack) — long-read summary stats
-- [RSeQC](https://rseqc.sourceforge.net/) and [RustQC](https://github.com/seqeralabs/rustqc) — RNA-seq QC metrics
-- [MultiQC](https://multiqc.info/) — aggregated QC report
-- [SIRVsuite](https://github.com/Lexogen-Tools/SIRVsuite) — SIRV spike-in QC
-- [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser) — sequencing report parsing
+- [FastQ Screen](https://www.bioinformatics.babraham.ac.uk/projects/fastq_screen/): contamination screening
+- [samtools](https://www.htslib.org/) / [mosdepth](https://github.com/brentp/mosdepth): alignment and coverage stats
+- [cramino (nanopack)](https://github.com/wdecoster/nanopack): long-read summary stats
+- [RSeQC](https://rseqc.sourceforge.net/) and [RustQC](https://github.com/seqeralabs/rustqc): RNA-seq QC metrics
+- [MultiQC](https://multiqc.info/): aggregated QC report
+- [SIRVsuite](https://github.com/Lexogen-Tools/SIRVsuite): SIRV spike-in QC
+- [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser): sequencing report parsing
 
 ---
 
@@ -104,10 +104,10 @@ sbatch snakemake.sh biowulf
 
 Set `assembly_mode` in your config file:
 
-- **`discovery`** — assembles novel transcripts with IsoQuant and StringTie, then
+- **`discovery`**: assembles novel transcripts with IsoQuant and StringTie, then
   merges them with IsoMatch into a unified, reannotated GTF. Final per-sample
   output is an annotated GTF. This is the most common mode.
-- **`quantification`** — reference-only estimation with no novel transcript
+- **`quantification`**: reference-only estimation with no novel transcript
   models. Final per-sample outputs are IsoQuant transcript/gene count tables and
   the StringTie GTF. The merge step is not run in this mode.
 
