@@ -1,12 +1,14 @@
-# NIA CARD Long-read RNA Sequencing Pipeline
+# SALRR: Scalable Analysis of Long-Read RNA-Seq
 
 ![Workflow](data_processing_workflow.png)
 
-A Snakemake pipeline for processing Oxford Nanopore Technologies (ONT) long-read
-RNA sequencing data: read trimming, alignment, transcript assembly,
-quantification, and optional transcript merging. It runs on the NIH Biowulf
-cluster, generic SLURM clusters, and local workstations through a single
-codebase with selectable execution profiles.
+SALRR (Scalable Analysis of Long-Read RNA-seq) is an integrated platform for
+long-read RNA sequencing. This repository contains the reproducible
+computational workflow supporting SALRR: a Snakemake pipeline for processing
+Oxford Nanopore Technologies (ONT) data through read trimming, alignment,
+transcript assembly, quantification, and optional transcript merging. It runs
+on the NIH Biowulf cluster, generic SLURM clusters, and local workstations
+through a single codebase with selectable execution profiles.
 
 > **Note on basecalling:** Basecalling is currently supported on Biowulf only.
 > On generic SLURM clusters and local workstations, the pipeline starts from
@@ -76,8 +78,8 @@ Quality control and reporting:
 
 ```bash
 # 1. Clone and enter the pipeline directory
-git clone https://github.com/NIH-CARD/CARDlongread_ONT_long_read_RNA.git
-cd CARDlongread_ONT_long_read_RNA
+git clone https://github.com/NIH-CARD/SALRR.git
+cd SALRR
 
 # 2. Set reference paths in the config for your profile
 #    biowulf -> config/biowulf.yaml
