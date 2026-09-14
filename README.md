@@ -56,18 +56,19 @@ Processing:
 - [Minimap2](https://github.com/lh3/minimap2): alignment
 - [StringTie](https://github.com/gpertea/stringtie): transcript assembly
 - [IsoQuant](https://ablab.github.io/IsoQuant/index.html): assembly and quantification
-- **IsoMatch**: assembly merging and reannotation
-- [gffcompare](https://github.com/gpertea/gffcompare): transcript comparison
+- [IsoMatch](https://github.com/zhengxinchang/isomatch): assembly merging and reannotation
 
 Quality control and reporting:
 
 - [FastQ Screen](https://www.bioinformatics.babraham.ac.uk/projects/fastq_screen/): contamination screening
 - [samtools](https://www.htslib.org/) / [mosdepth](https://github.com/brentp/mosdepth): alignment and coverage stats
 - [cramino (nanopack)](https://github.com/wdecoster/nanopack): long-read summary stats
-- [RSeQC](https://rseqc.sourceforge.net/) and [RustQC](https://github.com/seqeralabs/rustqc): RNA-seq QC metrics
 - [MultiQC](https://multiqc.info/): aggregated QC report
-- [SIRVsuite](https://github.com/Lexogen-Tools/SIRVsuite): SIRV spike-in QC
-- [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser): sequencing report parsing
+
+### Additional tools
+
+- [RSeQC](https://rseqc.sourceforge.net/) and [RustQC](https://github.com/seqeralabs/rustqc): additional RNA-seq QC checks
+- [CARDlongread-report-parser](https://github.com/molleraj/CARDlongread-report-parser): NIH CARD available resource for parsing and summarizing sequencing run output
 
 ---
 
@@ -164,9 +165,48 @@ names.
 
 ---
 
-## Outputs
+## Outputs and QC
 
-- Per-sample transcript and gene quantification tables (`.tsv`)
-- StringTie transcript assemblies (`.gtf`)
-- Merged, annotated transcript GTF per sample (discovery mode)
-- MultiQC report summarizing run quality
+The workflow creates a few main output areas. A typical layout looks like this:
+
+```text
+snakemake_test/
+├── MAPPED/
+│   └── {sample_id}/
+│       └── {sample_id}_{flowcell_id}_human_mapped.sorted.bam
+├── ASSEMBLY/
+│   ├── ISOQUANT/
+│   │   └── {sample_id}/
+│   │       └── {sample_id}_{flowcell_id}/
+│   │           ├── {sample_id}_{flowcell_id}.transcript_counts.tsv
+│   │           └── {sample_id}_{flowcell_id}.gene_counts.tsv
+│   ├── STRINGTIE/
+│   │   └── {sample_id}/
+│   │       └── {sample_id}_{flowcell_id}_human.stringtie.gtf
+│   └── MERGED/
+│       └── {sample_id}/
+│           └── {sample_id}_{flowcell_id}.annotated.gtf
+├── QC/
+│   ├── multiqc_report.html
+│   ├── mapping_qc/
+│   ├── fastq_screen/
+│   └── trimming_qc/
+└── ASSEMBLY/COHORT/   # only when cohort merge is enabled
+    ├── gtf/
+    │   └── {cohort_name}.annotated.gtf
+    ├── quant/
+    ├── matrix/
+    │   ├── transcript_counts_matrix.tsv
+    │   └── gene_counts_matrix.tsv
+    └── cohort_manifest.tsv
+```
+
+The main outputs to check after a successful run are:
+
+- the mapped BAM file for each sample
+- the sample-level annotated GTF in `discovery` mode
+- the sample-level transcript count table and StringTie GTF in `quantification` mode
+- the final MultiQC report in the QC directory
+- the cohort merged GTF and matrices only when `use_cross_sample_merge` is enabled
+
+A run is typically considered successful when the expected files above are present, Snakemake finishes without failed jobs, and the MultiQC HTML report is generated.
