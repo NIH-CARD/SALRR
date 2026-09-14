@@ -1,0 +1,12 @@
+# Snakemake Profile: Local Execution
+# Use this profile for running on your local machine/workstation
+# Command: snakemake --profile ./snakemake_profiles/default
+
+# Execution settings for local machine
+jobs: 1                    # Run 1 job at a time locally
+local-cores: 4             # Use up to 4 cores on your machine (adjust to your CPU count)
+keep-going: True           # Keep going even if one job fails
+rerun-incomplete: True     # Rerun incomplete jobs
+latency-wait: 60           # Wait 60 seconds before checking output files
+singularity-args: " --cleanenv"
+use-singularity: True

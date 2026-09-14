@@ -1,0 +1,69 @@
+# Biowulf-specific configuration overrides
+# This file overrides values in default.yaml for Biowulf cluster users
+# 
+# Only include paths and settings that differ from default.yaml
+# Everything else inherits from default.yaml
+
+#skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
+skip_basecall: false
+
+#Enable or Disable SIRV spike-in analysis (set to true if you spiked your samples with SIRV controls)
+use_sirv: true
+
+
+# You could change these directories as you see fit
+base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
+ont_ubam: 'snakemake_test/ONT_UBAM'
+pychopper_dir: 'snakemake_test/PYCHOPPER'
+mapping_dir: 'snakemake_test/MAPPED'
+assembly_dir: 'snakemake_test/ASSEMBLY/'
+isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
+stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
+merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
+
+# Cross-sample (cohort) merge: consolidate all per-sample annotated GTFs into one
+# unified GTF with IsoMatch, then re-quantify every sample against it with IsoQuant.
+# Opt-in: leave false to end the pipeline at the per-sample annotated GTF.
+use_cross_sample_merge: false
+cohort_dir: 'snakemake_test/ASSEMBLY/COHORT'
+cohort_name: 'NABEC'
+
+# Dorado configurations
+dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
+
+# Pychopper configuration
+pychopper_kit: 'PCS114'
+minimum_quality_score: 10
+minimum_read_length: 300
+
+# FastQ Screen contamination screening (runs after trimming, before alignment)
+use_fastq_screen: true
+fastq_screen_conf: 'config/fastq_screen_minimap2.conf'
+fastq_screen_subset: 100000  # number of reads to screen (0 = all reads)
+
+# Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
+assembly_mode: 'discovery'
+
+#SIRV analysis directory (optional) if you use SIRV spike-ins
+#Directory where the SIRV Set4 excel file is located
+data_dir: './'
+
+# Path to the container image (optional)
+
+# These directories should be provided for your corresponding reference files
+genome: '/data/CARDPB/resources/hg38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa'
+sirvome: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.fasta'
+human_genedb: '/data/CARDPB/resources/hg38/gencode.v43.annotation.gtf'
+sirv_genedb: '/data/CARDPB/data/LRS_RNA/projects/cedrics_nabec/REFERENCES/SIRV/SIRV_ERCC_longSIRV_multi-fasta_20210507.corrected.gtf'
+
+# This directory should be kept unchanged unless you moved the scripts folder
+script_dir: 'scripts/'
+
+# you could change the the source sample file but specify the path and name accordingly
+sample_file: 'input_example.txt'
+
+
+# configurations for MultiQC steps (directories and configs)
+qc_dir: 'snakemake_test/QC'
+log_filesize_limit: 2000000000
+

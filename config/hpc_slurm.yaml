@@ -1,0 +1,82 @@
+# Generic HPC SLURM cluster configuration
+# This file provides overrides for users running on standard HPC clusters with SLURM
+#
+# INSTRUCTIONS for HPC users:
+# 1. Update the reference paths below with your system's paths
+# 2. Adjust base_dir if you want outputs in a different location
+# 3. Keep all relative output directory paths unchanged (they're portable)
+#
+# If your HPC cluster has shared reference data, update the paths below.
+# Otherwise, inherit from default.yaml and fill in your own paths.
+
+
+#skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
+#skip_basecall: true
+
+#Enable or Disable SIRV spike-in analysis (set to true if you spiked your samples with SIRV controls)
+#use_sirv: true
+ 
+
+# Optional: Change base directory for HPC outputs
+# Leave as './' if running from snakemake_pipeline/ directory
+# Or set to an absolute path like '/home/username/lrrna_outputs/'
+# base_dir: './'
+
+# # You could change these directories as you see fit
+# base_dir: '/data/CARD_AUX/LRS_temp/NABEC_RNA/'
+# ont_ubam: 'snakemake_test/ONT_UBAM'
+# pychopper_dir: 'snakemake_test/PYCHOPPER'
+# mapping_dir: 'snakemake_test/MAPPED'
+# assembly_dir: 'snakemake_test/ASSEMBLY/'
+# isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
+# stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
+# merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
+
+# # Cross-sample (cohort) merge: consolidate all per-sample annotated GTFs into one
+# # unified GTF with IsoMatch, then re-quantify every sample against it with IsoQuant.
+# # Opt-in: leave false to end the pipeline at the per-sample annotated GTF.
+# use_cross_sample_merge: false
+# cohort_dir: 'snakemake_test/ASSEMBLY/COHORT'
+# cohort_name: 'cohort'
+
+
+# Reference genome paths for your HPC system
+# Replace these with paths available on your cluster
+# Ask your HPC admin for the location of:
+# - GRCh38 reference genome (FASTA)
+# - GENCODE annotations (GTF)
+# - SIRV spike-in references (if available on your cluster)
+#
+# Example paths for common HPC systems:
+#   /shared/genomes/GRCh38.fa
+#   /cluster/references/gencode.v43.gtf
+#   /shared/spike_ins/SIRV/
+#
+# #SIRV analysis directory (optional) if you use SIRV spike-ins
+# Directory where the SIRV Set4 excel file is located
+# data_dir: 'SIRV_Set4_Norm_sequence-design-overview_20210507a.xlsx'
+#
+# genome: '/path/to/your/GRCh38.fa'
+# human_genedb: '/path/to/your/gencode.v43.annotation.gtf'
+# sirvome: '/path/to/your/SIRV_multi-fasta.fasta'
+# sirv_genedb: '/path/to/your/SIRV_genedb.gtf'
+
+# # Dorado configurations
+# dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
+
+# # Pychopper configuration
+# pychopper_kit: 'PCS114'
+# minimum_quality_score: 10
+# minimum_read_length: 300
+
+# FastQ Screen contamination screening
+# use_fastq_screen: true
+# fastq_screen_conf: 'config/fastq_screen_minimap2.conf'
+# fastq_screen_subset: 100000
+
+# # Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
+# assembly_mode: 'quantification'
+
+## configurations for MultiQC steps (directories and configs)
+# qc_dir: 'snakemake_test/QC'
+# log_filesize_limit: 200000000

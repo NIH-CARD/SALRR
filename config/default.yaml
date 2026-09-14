@@ -1,0 +1,69 @@
+# Default configuration for ONT RNA pipeline
+# Works for local, Biowulf, and generic HPC environments
+
+#skipping basecalling step (set to true if you're starting from pre-basecalled BAM files)
+skip_basecall: true
+
+#Enable or Disable SIRV spike-in analysis (set to true if you spiked your samples with SIRV controls)
+use_sirv: true
+
+# Base directory - edit this if you need a different path
+base_dir: '../'
+
+# Output directories (relative to base_dir)
+ont_ubam: 'snakemake_test/ONT_UBAM'
+pychopper_dir: 'snakemake_test/PYCHOPPER'
+mapping_dir: 'snakemake_test/MAPPED'
+assembly_dir: 'snakemake_test/ASSEMBLY/'
+isoquant_dir: 'snakemake_test/ASSEMBLY/ISOQUANT'
+stringtie_dir: 'snakemake_test/ASSEMBLY/STRINGTIE'
+merge_dir: 'snakemake_test/ASSEMBLY/MERGED'
+
+# Cross-sample (cohort) merge: consolidate all per-sample annotated GTFs into one
+# unified GTF with IsoMatch, then re-quantify every sample against it with IsoQuant.
+# Opt-in: leave false to end the pipeline at the per-sample annotated GTF.
+use_cross_sample_merge: false
+cohort_dir: 'snakemake_test/ASSEMBLY/COHORT'
+cohort_name: 'cohort'
+
+# Dorado configurations
+dorado_model: 'dna_r10.4.1_e8.2_400bps_sup@v5.0.0'
+
+# Pychopper configuration
+pychopper_kit: 'PCS114'
+minimum_quality_score: 10
+minimum_read_length: 300
+
+
+# FastQ Screen contamination screening (runs after trimming, before alignment)
+use_fastq_screen: true
+fastq_screen_conf: 'config/fastq_screen_minimap2.conf'
+fastq_screen_subset: 100000  # number of reads to screen (0 = all reads)
+
+
+# Assembly mode: 'discovery' (novel transcript assembly) or "quantification" (reference-only estimation)
+assembly_mode: 'quantification'
+
+# Reference genomes and annotations
+# IMPORTANT: These should point to absolute paths on your system
+# Update these paths to match your local setup
+genome: '/path/to/reference/genome.fa'
+sirvome: '/path/to/reference/sirvome.fasta'
+human_genedb: '/path/to/reference/gencode.annotation.gtf'
+sirv_genedb: '/path/to/reference/sirv.corrected.gtf'
+
+#SIRV analysis directory (optional) if you use SIRV spike-ins
+#Directory where the SIRV Set4 excel file is located
+data_dir: 'SIRV_Set4_Norm_sequence-design-overview_20210507a.xlsx'
+
+# Script directory
+script_dir: 'scripts/'
+
+# Sample sheet
+sample_file: 'input_example.txt'
+
+
+# configurations for MultiQC steps (directories and configs)
+qc_dir: 'snakemake_test/QC'
+log_filesize_limit: 200000000
+

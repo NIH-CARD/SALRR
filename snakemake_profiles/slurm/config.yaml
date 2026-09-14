@@ -1,0 +1,20 @@
+# Snakemake Profile: Generic HPC SLURM Cluster
+# Use this profile for running on standard HPC clusters with SLURM
+# Examples: XSEDE, NERSC, university clusters, etc.
+# Command: snakemake --profile ./snakemake_profiles/slurm
+
+# Standard SLURM job submission settings
+restart-times: 0
+jobscript: slurm_jobscript.sh
+cluster: sbatch             # Standard SLURM sbatch command
+cluster-status: sacct       # Standard SLURM status check (sacct)
+cluster-cancel: scancel     # Standard SLURM job cancellation
+max-jobs-per-second: 1
+max-status-checks-per-second: 1
+local-cores: 4              # Local cores available on login node
+latency-wait: 240           # Wait 240 seconds for files to appear
+jobs: 50                    # Allow up to 50 simultaneous jobs
+keep-going: True            # Keep going even if one job fails
+rerun-incomplete: True      # Rerun incomplete jobs
+singularity-args: " --cleanenv"
+use-singularity: True
