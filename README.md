@@ -147,6 +147,10 @@ Unaligned BAM files are expected under:
 snakemake_test/ONT_UBAM/{sample_id}/{sample_id}_{flowcell_id}.bam
 ```
 
+### FastQ Screen reference databases
+
+FastQ Screen requires the reference databases to be prepared locally and indexed before use. The pipeline expects database paths in the FastQ Screen config file to point to the prebuilt reference base names, and users should follow the official FastQ Screen documentation for creating those indexes. The example config file in this repository is a template and will need to be updated to match the local database paths on your system.
+
 ### Sample Sheet
 
 Provide a tab-separated file with one sample per line and no header:
