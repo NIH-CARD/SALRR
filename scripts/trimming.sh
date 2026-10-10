@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 
 
@@ -62,6 +62,7 @@ samtools fastq \
 # Running pychopper for trimming
 
 pychopper \
+  -y \
   -t "${THREADS}" \
   -m phmm \
   -k "${KIT}" \

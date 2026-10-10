@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 #Argument parsing
 usage_error () { echo >&2 "$(basename $0):  $1"; exit 2; }

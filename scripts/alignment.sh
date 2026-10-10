@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 
 
@@ -25,7 +26,7 @@ if [ "$#" != 0 ]; then
             --cramino-human-qc-file) assert_argument "$1" "$opt"; CRAMINO_HUMAN_QC_FILE="$1"; shift;;
             --mosdepth-sirv-prefix) assert_argument "$1" "$opt"; MOSDEPTH_SIRV_PREFIX="$1"; shift;;
             --mosdepth-human-prefix) assert_argument "$1" "$opt"; MOSDEPTH_HUMAN_PREFIX="$1"; shift;;
-            --skip-sirv) SKIP_SIRV=true; shift;;
+            --skip-sirv) SKIP_SIRV=true;;
       
             # Arguments processing. You may remove any unneeded line after the 1st.
             -|''|[!-]*) set -- "$@" "$opt";;                                          # positional argument, rotate to the end
